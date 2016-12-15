@@ -26,6 +26,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
@@ -74,6 +75,13 @@ public:
     QLabel *label_6;
     QSlider *sliderSatur;
     QCheckBox *checkHistogram;
+    QGroupBox *boxGrayscale;
+    QFormLayout *formLayout_3;
+    QRadioButton *radioButton;
+    QRadioButton *radioButton_2;
+    QRadioButton *radioButton_3;
+    QRadioButton *radioButton_4;
+    QRadioButton *radioButton_5;
     QWidget *widget;
     QWidget *page_3;
     QWidget *page_2;
@@ -213,7 +221,7 @@ public:
         toolBox->setFrameShadow(QFrame::Sunken);
         page = new QWidget();
         page->setObjectName(QStringLiteral("page"));
-        page->setGeometry(QRect(0, 0, 248, 414));
+        page->setGeometry(QRect(0, -30, 234, 423));
         verticalLayout_3 = new QVBoxLayout(page);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -309,6 +317,7 @@ public:
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
         formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        formLayout_2->setContentsMargins(-1, 7, -1, -1);
         label_6 = new QLabel(boxEnhance);
         label_6->setObjectName(QStringLiteral("label_6"));
 
@@ -334,6 +343,51 @@ public:
 
 
         verticalLayout_3->addWidget(boxEnhance);
+
+        boxGrayscale = new QGroupBox(page);
+        boxGrayscale->setObjectName(QStringLiteral("boxGrayscale"));
+        sizePolicy3.setHeightForWidth(boxGrayscale->sizePolicy().hasHeightForWidth());
+        boxGrayscale->setSizePolicy(sizePolicy3);
+        boxGrayscale->setMinimumSize(QSize(0, 100));
+        boxGrayscale->setCheckable(true);
+        formLayout_3 = new QFormLayout(boxGrayscale);
+        formLayout_3->setSpacing(6);
+        formLayout_3->setContentsMargins(11, 11, 11, 11);
+        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
+        formLayout_3->setContentsMargins(-1, 7, -1, -1);
+        radioButton = new QRadioButton(boxGrayscale);
+        radioButton->setObjectName(QStringLiteral("radioButton"));
+        radioButton->setMinimumSize(QSize(0, 30));
+
+        formLayout_3->setWidget(0, QFormLayout::LabelRole, radioButton);
+
+        radioButton_2 = new QRadioButton(boxGrayscale);
+        radioButton_2->setObjectName(QStringLiteral("radioButton_2"));
+        radioButton_2->setMinimumSize(QSize(0, 30));
+        radioButton_2->setChecked(true);
+
+        formLayout_3->setWidget(0, QFormLayout::FieldRole, radioButton_2);
+
+        radioButton_3 = new QRadioButton(boxGrayscale);
+        radioButton_3->setObjectName(QStringLiteral("radioButton_3"));
+        radioButton_3->setMinimumSize(QSize(0, 30));
+
+        formLayout_3->setWidget(1, QFormLayout::LabelRole, radioButton_3);
+
+        radioButton_4 = new QRadioButton(boxGrayscale);
+        radioButton_4->setObjectName(QStringLiteral("radioButton_4"));
+        radioButton_4->setMinimumSize(QSize(0, 30));
+
+        formLayout_3->setWidget(1, QFormLayout::FieldRole, radioButton_4);
+
+        radioButton_5 = new QRadioButton(boxGrayscale);
+        radioButton_5->setObjectName(QStringLiteral("radioButton_5"));
+        radioButton_5->setMinimumSize(QSize(0, 30));
+
+        formLayout_3->setWidget(2, QFormLayout::LabelRole, radioButton_5);
+
+
+        verticalLayout_3->addWidget(boxGrayscale);
 
         widget = new QWidget(page);
         widget->setObjectName(QStringLiteral("widget"));
@@ -381,6 +435,7 @@ public:
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
+        QObject::connect(boxGrayscale, SIGNAL(clicked(bool)), checkHistogram, SLOT(setEnabled(bool)));
 
         toolBox->setCurrentIndex(0);
 
@@ -415,6 +470,12 @@ public:
         boxEnhance->setTitle(QApplication::translate("MainWinClass", "\345\233\276\345\203\217\345\242\236\345\274\272", 0));
         label_6->setText(QApplication::translate("MainWinClass", "\351\245\261\345\222\214\345\272\246\357\274\232", 0));
         checkHistogram->setText(QApplication::translate("MainWinClass", "\347\233\264\346\226\271\345\233\276\345\235\207\350\241\241\345\214\226", 0));
+        boxGrayscale->setTitle(QApplication::translate("MainWinClass", "\347\201\260\345\272\246\345\233\276\346\217\220\345\217\226", 0));
+        radioButton->setText(QApplication::translate("MainWinClass", "\347\201\260\345\272\246\345\200\274", 0));
+        radioButton_2->setText(QApplication::translate("MainWinClass", "\350\211\262\350\260\203\345\210\206\351\207\217", 0));
+        radioButton_3->setText(QApplication::translate("MainWinClass", "R\345\210\206\351\207\217", 0));
+        radioButton_4->setText(QApplication::translate("MainWinClass", "G\345\210\206\351\207\217", 0));
+        radioButton_5->setText(QApplication::translate("MainWinClass", "B\345\210\206\351\207\217", 0));
         toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206\350\256\276\347\275\256", 0));
         toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\351\241\265", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));

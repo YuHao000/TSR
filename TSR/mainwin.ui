@@ -228,9 +228,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
-           <width>248</width>
-           <height>414</height>
+           <y>-30</y>
+           <width>234</width>
+           <height>423</height>
           </rect>
          </property>
          <attribute name="label">
@@ -445,6 +445,9 @@
              <bool>true</bool>
             </property>
             <layout class="QFormLayout" name="formLayout_2">
+             <property name="topMargin">
+              <number>7</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_6">
                <property name="text">
@@ -490,6 +493,101 @@
                </property>
                <property name="text">
                 <string>直方图均衡化</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="boxGrayscale">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>灰度图提取</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <layout class="QFormLayout" name="formLayout_3">
+             <property name="topMargin">
+              <number>7</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>灰度值</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="radioButton_2">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>色调分量</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_3">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>R分量</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QRadioButton" name="radioButton_4">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>G分量</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QRadioButton" name="radioButton_5">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>B分量</string>
                </property>
               </widget>
              </item>
@@ -624,6 +722,22 @@
     <hint type="destinationlabel">
      <x>299</x>
      <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>boxGrayscale</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>checkHistogram</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>525</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>486</y>
     </hint>
    </hints>
   </connection>

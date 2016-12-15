@@ -6,6 +6,12 @@ ImageViewer::ImageViewer(QWidget * parent) :
 	for (int i = 0; i < 4; i++) {
 		mPixmap[i] = QPixmap();
 	}
+
+	sColorTable = QVector<QRgb>(256);
+	for (int i = 0; i < 256; ++i)
+	{
+		sColorTable[i] = qRgb(i, i, i);
+	}
 }
 
 void ImageViewer::paintEvent(QPaintEvent *event) {
@@ -75,17 +81,6 @@ QPixmap ImageViewer::cvMatToQPixmap(const cv::Mat &inMat) {
 	// 8-bit, 1 channel
 	case CV_8UC1:
 	{
-		static QVector<QRgb>  sColorTable(256);
-
-		// only create our color table the first time
-		if (sColorTable.isEmpty())
-		{
-			for (int i = 0; i < 256; ++i)
-			{
-				sColorTable[i] = qRgb(i, i, i);
-			}
-		}
-
 		QImage image(inMat.data,
 			inMat.cols, inMat.rows,
 			static_cast<int>(inMat.step),

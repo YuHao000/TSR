@@ -19,6 +19,7 @@ protected:
 
 private:
 	QPixmap cvMatToQPixmap(const cv::Mat &inMat);
+	QVector<QRgb> sColorTable;
 
 	int NumPixmap;
 	QPixmap mPixmap[4];

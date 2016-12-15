@@ -21,6 +21,10 @@ typedef struct {
 	int Saturation;
 	bool Histogram;
 
+	// 灰度图提取设置
+	bool GrayscaleEnabled;
+	int GrayscaleMethed;
+
 	int k;
 }TSRParam_t;
 
@@ -57,6 +61,7 @@ private:
 	void OutputROIImage();
 	void SaturationEnhance();
 	void HistogramEqualize();
+	void ExtractGrayscale();
 };
 
 #endif

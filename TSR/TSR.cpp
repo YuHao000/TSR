@@ -37,6 +37,7 @@ void TSR::run() {
 			startTime = getTickCount();
 			GetROIImage();
 			SaturationEnhance();
+			ExtractGrayscale();
 			HistogramEqualize();
 			OutputROIImage();
 			endTime = getTickCount();
@@ -83,6 +84,8 @@ void TSR::OutputROIImage() {
 	double ROIBottom = currentState.DetectArea[1];
 	double ROISide = currentState.DetectArea[2];
 
+	int a = img.channels();
+	int b = img.type();
 	int cols = img.cols * (1 - ROISide / 2) * img.channels();
 
 	for (int i = img.rows / ROIBottom * ROITop; i < img.rows; i++) {
@@ -119,4 +122,28 @@ void TSR::SaturationEnhance() {
 // 直方图均衡化
 void TSR::HistogramEqualize() {
 	//equalizeHist(img, img);
+}
+
+// 提取灰度图
+void TSR::ExtractGrayscale() {
+	if (!currentState.GrayscaleEnabled)
+		return;
+
+	vector<Mat> channels;
+	switch (currentState.GrayscaleMethed)
+	{
+	case 0:
+		break;
+
+	// Hue分量
+	case 1:
+		cvtColor(img, img, CV_BGR2HSV);	
+		split(img, channels);
+		img = channels[1];
+		break;
+
+	default:
+		break;
+	}
+
 }

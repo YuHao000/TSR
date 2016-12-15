@@ -31,9 +31,13 @@ private:
 	bool AutoPlay = false;
 	cv::Mat ImgDisplay;
 
+	// Widget groups
+	std::vector<QRadioButton *> GrayscaleRadios;
+
 	std::string UTF8ToGBK(const char* strUTF8);
 	void GetSettings();
-	
+	int GetGrayscaleMethod();
+	void SetGaryscaleMethod(int val);
 
 private slots:
 	void OpenNewImg();

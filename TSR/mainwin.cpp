@@ -21,6 +21,12 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
 	ui.mainToolBar->addAction(ui.actionResend);
 
+	GrayscaleRadios.push_back(ui.radioButton);
+	GrayscaleRadios.push_back(ui.radioButton_2);
+	GrayscaleRadios.push_back(ui.radioButton_3);
+	GrayscaleRadios.push_back(ui.radioButton_4);
+	GrayscaleRadios.push_back(ui.radioButton_5);
+
 	GetSettings();
 	myTSR.start();
 
@@ -50,6 +56,12 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.boxEnhance, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
 	connect(ui.sliderSatur, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
 	connect(ui.checkHistogram, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+
+	// 灰度图提取
+	connect(ui.boxGrayscale, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	for (auto it = GrayscaleRadios.begin(); it != GrayscaleRadios.end(); it++) {
+		connect(*it, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	}
 }
 
 // Open New Image File Slot
@@ -112,14 +124,15 @@ void MainWin::SendImage() {
 	TSRParam.DetectArea[2] = ui.edtDetectSide->value();
 	TSRParam.DetectDiv = ui.comboDetectDiv->currentIndex();
 
-
 	TSRParam.EnhanceEnabled = ui.boxEnhance->isChecked();
 	TSRParam.Saturation = ui.sliderSatur->value();
 	TSRParam.Histogram = ui.checkHistogram->isChecked();
 
-
+	TSRParam.GrayscaleEnabled = ui.boxGrayscale->isChecked();
+	TSRParam.GrayscaleMethed = GetGrayscaleMethod();
 
 	TSRParam.k = 2 * ui.conScroll->value() - 1;
+
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
 }
@@ -169,9 +182,9 @@ void MainWin::CaptureFrame(int val) {
 		double y2 = ImgDisplay.rows * ui.edtDetectBottom->value();
 
 		line(ImgDisplay, Point(0 , y2), Point(x1, y2), COLOR_RED, 2);
-		line(ImgDisplay, Point(x1, y2), Point(x1, y1), COLOR_RED, 2);
+		line(ImgDisplay, Point(x1, y2), Point(x1, y1), COLOR_RED, 4);
 		line(ImgDisplay, Point(x1, y1), Point(x2, y1), COLOR_RED, 2);
-		line(ImgDisplay, Point(x2, y1), Point(x2, y2), COLOR_RED, 2);
+		line(ImgDisplay, Point(x2, y1), Point(x2, y2), COLOR_RED, 4);
 		line(ImgDisplay, Point(x2, y2), Point(ImgDisplay.cols, y2), COLOR_RED, 2);
 
 		((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
@@ -234,6 +247,10 @@ void MainWin::GetSettings() {
 	ui.boxEnhance->setChecked(mySetting.value("EnhanceEnabled", false).toBool());
 	ui.sliderSatur->setValue(mySetting.value("Saturation", 100).toInt());
 	ui.checkHistogram->setChecked(mySetting.value("Histogram", false).toBool());
+
+	// Grayscale Extract
+	ui.boxGrayscale->setChecked(mySetting.value("GrayscaleEnabled", true).toBool());
+	SetGaryscaleMethod(mySetting.value("GrayscaleMethed", 1).toInt());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -258,5 +275,24 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("EnhanceEnabled", ui.boxEnhance->isChecked());
 	mySetting.setValue("Saturation", ui.sliderSatur->value());
 	mySetting.setValue("Histogram", ui.checkHistogram->isChecked());
+
+	// Grayscale Extract
+	mySetting.setValue("GrayscaleEnabled", ui.boxGrayscale->isChecked());
+	mySetting.setValue("GrayscaleMethed", GetGrayscaleMethod());
+}
+
+// 根据单选按钮组的设置确定灰度图提取方法
+int MainWin::GetGrayscaleMethod() {
+	for (auto it = GrayscaleRadios.begin(); it != GrayscaleRadios.end(); it++) {
+		if ((*it)->isChecked())
+			return it - GrayscaleRadios.begin();
+	}
+
+	return -1;
+}
+
+// 设置灰度图按钮组的状态
+void MainWin::SetGaryscaleMethod(int val) {
+	GrayscaleRadios[val]->setChecked(true);
 }
 
