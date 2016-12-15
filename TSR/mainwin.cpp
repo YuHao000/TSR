@@ -19,6 +19,7 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 
 	ui.mainToolBar->addAction(ui.actionOpenImg);
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
+	ui.mainToolBar->addAction(ui.actionResend);
 
 	GetSettings();
 	myTSR.start();
@@ -26,8 +27,9 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	// Action
 	connect(ui.actionOpenImg, SIGNAL(triggered()), this, SLOT(OpenNewImg()));
 	connect(ui.actionOpenVideo, SIGNAL(triggered()), this, SLOT(OpenNewVideo()));
+	connect(ui.actionResend, SIGNAL(triggered()), this, SLOT(SendImage()));
 
-	connect(ui.conScroll, SIGNAL(valueChanged()), this, SLOT(SendImage()));
+	connect(ui.conScroll, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
 
 	// Video control box
 	connect(ui.btnPlay, SIGNAL(clicked()), this, SLOT(SetVideoAutoPlay()));
@@ -70,7 +72,7 @@ void MainWin::OpenNewVideo() {
 	ui.VideoControlBox->setEnabled(false);
 
 	QString path = QFileDialog::getOpenFileName(this, "打开视频文件",
-		"D:\\Desktop", "视频(*.mov)");
+		"D:\\CSC\\OpenCV\\Record", "视频(*.mov *.mp4 *.avi)");
 
 	if (!path.isEmpty()) {
 		capture.open(UTF8ToGBK(path.toStdString().data()));
@@ -85,8 +87,14 @@ void MainWin::OpenNewVideo() {
 	}
 }
 
+// Send current image to TSR Algorithm module
 void MainWin::SendImage() {
 	TSRParamLock.lock();
+	TSRParam.DetectAreaEnable = ui.checkDetectArea->isChecked();
+	TSRParam.DetectArea[0] = ui.edtDetectTop->value();
+	TSRParam.DetectArea[1] = ui.edtDetectBottom->value();
+	TSRParam.DetectArea[2] = ui.edtDetectSide->value();
+	TSRParam.DetectDiv = ui.comboDetectDiv->currentIndex();
 	TSRParam.k = 2 * ui.conScroll->value() - 1;
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -129,7 +137,25 @@ void MainWin::CaptureFrame(int val) {
 
 	ImgReadLock.lock();
 	capture >> ImgRead;
-	((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
+	if (ui.checkDetectArea->isChecked()) {
+		ImgDisplay = ImgRead.clone();
+		double x1 = ImgDisplay.cols * ui.edtDetectSide->value() / 2;
+		double x2 = ImgDisplay.cols - x1;
+		double y1 = ImgDisplay.rows * ui.edtDetectTop->value();
+		double y2 = ImgDisplay.rows * ui.edtDetectBottom->value();
+
+		line(ImgDisplay, Point(0 , y2), Point(x1, y2), COLOR_RED, 2);
+		line(ImgDisplay, Point(x1, y2), Point(x1, y1), COLOR_RED, 2);
+		line(ImgDisplay, Point(x1, y1), Point(x2, y1), COLOR_RED, 2);
+		line(ImgDisplay, Point(x2, y1), Point(x2, y2), COLOR_RED, 2);
+		line(ImgDisplay, Point(x2, y2), Point(ImgDisplay.cols, y2), COLOR_RED, 2);
+
+		((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
+	}
+	else {
+		((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
+	}
+	
 	ImgReadLock.unlock();
 
 	SendImage();

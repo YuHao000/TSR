@@ -29,6 +29,7 @@ private:
 	Ui::MainWinClass ui;
 	cv::VideoCapture capture;
 	bool AutoPlay = false;
+	cv::Mat ImgDisplay;
 
 	std::string UTF8ToGBK(const char* strUTF8);
 	void GetSettings();

@@ -5,8 +5,14 @@
 #include <QMutex>
 #include <opencv2/opencv.hpp>
 
+#define COLOR_RED cv::Scalar(0, 0, 255)
+#define COLOR_GRAY cv::Scalar(155, 155, 155)
+
 typedef struct {
-	enum {Idle, ReadImg, Test} ProcessStep;
+	enum {Idle, ReadImg, Step1, Step2, Step3} ProcessStep;
+	bool DetectAreaEnable;
+	double DetectArea[3];
+	int DetectDiv;
 	int k;
 }TSRParam_t;
 
@@ -35,8 +41,16 @@ protected:
 private:
 	int64 startTime;
 	int64 endTime;
-	void A(int k);
 	cv::Mat img;
+	cv::Rect ROI;
+
+	// ROI
+	bool ROIEnable;
+	double ROITop, ROIBottom, ROISide;
+
+	void A(int k);
+	void GetROIImage();
+	void OutputROIImage();
 };
 
 #endif

@@ -42,6 +42,7 @@ public:
     QAction *actionQuit;
     QAction *actionOpenImg;
     QAction *actionOpenVideo;
+    QAction *actionResend;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     ImageViewer *PicArea;
@@ -73,6 +74,7 @@ public:
     QWidget *widget;
     QMenuBar *menuBar;
     QMenu *mainMenu;
+    QMenu *menu;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -101,6 +103,8 @@ public:
         actionOpenImg->setFont(font);
         actionOpenVideo = new QAction(MainWinClass);
         actionOpenVideo->setObjectName(QStringLiteral("actionOpenVideo"));
+        actionResend = new QAction(MainWinClass);
+        actionResend->setObjectName(QStringLiteral("actionResend"));
         centralWidget = new QWidget(MainWinClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
@@ -314,6 +318,8 @@ public:
         mainMenu = new QMenu(menuBar);
         mainMenu->setObjectName(QStringLiteral("mainMenu"));
         mainMenu->setFont(font);
+        menu = new QMenu(menuBar);
+        menu->setObjectName(QStringLiteral("menu"));
         MainWinClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWinClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -323,10 +329,12 @@ public:
         MainWinClass->setStatusBar(statusBar);
 
         menuBar->addAction(mainMenu->menuAction());
+        menuBar->addAction(menu->menuAction());
         mainMenu->addAction(actionOpenImg);
         mainMenu->addAction(actionOpenVideo);
         mainMenu->addSeparator();
         mainMenu->addAction(actionQuit);
+        menu->addAction(actionResend);
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
@@ -347,6 +355,7 @@ public:
         actionQuit->setText(QApplication::translate("MainWinClass", "\351\200\200\345\207\272", 0));
         actionOpenImg->setText(QApplication::translate("MainWinClass", "\346\211\223\345\274\200\345\233\276\347\211\207", 0));
         actionOpenVideo->setText(QApplication::translate("MainWinClass", "\346\211\223\345\274\200\350\247\206\351\242\221", 0));
+        actionResend->setText(QApplication::translate("MainWinClass", "\345\206\215\346\254\241\345\244\204\347\220\206", 0));
         VideoControlBox->setTitle(QApplication::translate("MainWinClass", "\350\247\206\351\242\221\346\216\247\345\210\266", 0));
         btnPlay->setText(QApplication::translate("MainWinClass", "\346\222\255\346\224\276", 0));
         btnPrevious->setText(QApplication::translate("MainWinClass", "\344\270\212\344\270\200\345\270\247", 0));
@@ -369,6 +378,7 @@ public:
         toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\351\241\265", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
+        menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));
     } // retranslateUi
 
 };
