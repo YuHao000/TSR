@@ -1,0 +1,5 @@
+./Debug/
+./Win32/
+/TSR/Debug/
+*.VC.db
+*.opendb
