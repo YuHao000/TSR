@@ -31,11 +31,13 @@ private:
 	bool AutoPlay = false;
 
 	std::string UTF8ToGBK(const char* strUTF8);
+	void GetSettings();
+	
 
 private slots:
 	void OpenNewImg();
 	void OpenNewVideo();
-	void ChangeCon(int value);
+	void SendImage();
 	void UpdateImage();
 	void SetVideoAutoPlay();
 	void NextFrame();

@@ -20,17 +20,14 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.mainToolBar->addAction(ui.actionOpenImg);
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
 
-	// Get Settings
-	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
-	resize(mySetting.value("WinSize", QSize(1024, 768)).toSize());
-
+	GetSettings();
 	myTSR.start();
 
 	// Action
 	connect(ui.actionOpenImg, SIGNAL(triggered()), this, SLOT(OpenNewImg()));
 	connect(ui.actionOpenVideo, SIGNAL(triggered()), this, SLOT(OpenNewVideo()));
 
-	connect(ui.conScroll, SIGNAL(valueChanged(int)), this, SLOT(ChangeCon(int)));
+	connect(ui.conScroll, SIGNAL(valueChanged()), this, SLOT(SendImage()));
 
 	// Video control box
 	connect(ui.btnPlay, SIGNAL(clicked()), this, SLOT(SetVideoAutoPlay()));
@@ -59,10 +56,7 @@ void MainWin::OpenNewImg() {
 		((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
 		ImgReadLock.unlock();
 		
-		TSRParamLock.lock();
-		TSRParam.ProcessStep = TSRParam.ReadImg;
-		TSRParam.k = 2 * ui.conScroll->value() - 1;
-		TSRParamLock.unlock();
+		SendImage();
 	}
 }
 
@@ -91,12 +85,11 @@ void MainWin::OpenNewVideo() {
 	}
 }
 
-void MainWin::ChangeCon(int val) {
+void MainWin::SendImage() {
 	TSRParamLock.lock();
+	TSRParam.k = 2 * ui.conScroll->value() - 1;
 	TSRParam.ProcessStep = TSRParam.ReadImg;
-	TSRParam.k = 2 * val - 1;
 	TSRParamLock.unlock();
-	ui.label->setText(QString::number(2 * val - 1));
 }
 
 // TSR Algorithm callback slot
@@ -139,10 +132,7 @@ void MainWin::CaptureFrame(int val) {
 	((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
 	ImgReadLock.unlock();
 
-	TSRParamLock.lock();
-	TSRParam.ProcessStep = TSRParam.ReadImg;
-	TSRParam.k = 2 * ui.conScroll->value() - 1;
-	TSRParamLock.unlock();
+	SendImage();
 
 	ui.statusBar->showMessage(QString::number(val) + " / " + QString::number(ui.ProgressBar->maximum()));
 }
@@ -175,12 +165,40 @@ string MainWin::UTF8ToGBK(const char* strUTF8)
 	return strTemp;
 }
 
+void MainWin::GetSettings() {
+	/* Get Settings */
+	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
+
+	// Window
+	resize(mySetting.value("WinSize", QSize(1024, 768)).toSize());
+	move(mySetting.value("WinPos", QPoint(0, 0)).toPoint());
+
+	// Detect Area
+	ui.checkDetectArea->setChecked(mySetting.value("EnableDetectArea", false).toBool());
+	ui.edtDetectTop->setValue(mySetting.value("DetectTop", 0.00).toDouble());
+	ui.edtDetectBottom->setValue(mySetting.value("DetectBottom", 0.00).toDouble());
+	ui.edtDetectSide->setValue(mySetting.value("DetectSide", 0.00).toDouble());
+	ui.comboDetectDiv->setCurrentIndex(mySetting.value("DetectDiv", 0).toInt());
+	ui.edtDetectTop->setEnabled(ui.checkDetectArea->isChecked());
+	ui.edtDetectBottom->setEnabled(ui.checkDetectArea->isChecked());
+	ui.edtDetectSide->setEnabled(ui.checkDetectArea->isChecked());
+	ui.comboDetectDiv->setEnabled(ui.checkDetectArea->isChecked());
+}
+
 void MainWin::closeEvent(QCloseEvent *event) {
 	if (capture.isOpened())
 		capture.release();
 
-	// Save program settings
+	/* Save program settings */
 	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
+	// Window
 	mySetting.setValue("WinSize", size());
+	mySetting.setValue("WinPos", pos());
+	// Detect Area
+	mySetting.setValue("EnableDetectArea", ui.checkDetectArea->isChecked());
+	mySetting.setValue("DetectTop", ui.edtDetectTop->value());
+	mySetting.setValue("DetectSide", ui.edtDetectSide->value());
+	mySetting.setValue("DetectBottom", ui.edtDetectBottom->value());
+	mySetting.setValue("DetectDiv", ui.comboDetectDiv->currentIndex());
 }
 

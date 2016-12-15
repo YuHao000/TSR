@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWin_t {
-    QByteArrayData data[12];
-    char stringdata0[119];
+    QByteArrayData data[11];
+    char stringdata0[113];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,20 +33,19 @@ QT_MOC_LITERAL(0, 0, 7), // "MainWin"
 QT_MOC_LITERAL(1, 8, 10), // "OpenNewImg"
 QT_MOC_LITERAL(2, 19, 0), // ""
 QT_MOC_LITERAL(3, 20, 12), // "OpenNewVideo"
-QT_MOC_LITERAL(4, 33, 9), // "ChangeCon"
-QT_MOC_LITERAL(5, 43, 5), // "value"
-QT_MOC_LITERAL(6, 49, 11), // "UpdateImage"
-QT_MOC_LITERAL(7, 61, 16), // "SetVideoAutoPlay"
-QT_MOC_LITERAL(8, 78, 9), // "NextFrame"
-QT_MOC_LITERAL(9, 88, 13), // "PreviousFrame"
-QT_MOC_LITERAL(10, 102, 12), // "CaptureFrame"
-QT_MOC_LITERAL(11, 115, 3) // "val"
+QT_MOC_LITERAL(4, 33, 9), // "SendImage"
+QT_MOC_LITERAL(5, 43, 11), // "UpdateImage"
+QT_MOC_LITERAL(6, 55, 16), // "SetVideoAutoPlay"
+QT_MOC_LITERAL(7, 72, 9), // "NextFrame"
+QT_MOC_LITERAL(8, 82, 13), // "PreviousFrame"
+QT_MOC_LITERAL(9, 96, 12), // "CaptureFrame"
+QT_MOC_LITERAL(10, 109, 3) // "val"
 
     },
     "MainWin\0OpenNewImg\0\0OpenNewVideo\0"
-    "ChangeCon\0value\0UpdateImage\0"
-    "SetVideoAutoPlay\0NextFrame\0PreviousFrame\0"
-    "CaptureFrame\0val"
+    "SendImage\0UpdateImage\0SetVideoAutoPlay\0"
+    "NextFrame\0PreviousFrame\0CaptureFrame\0"
+    "val"
 };
 #undef QT_MOC_LITERAL
 
@@ -66,22 +65,22 @@ static const uint qt_meta_data_MainWin[] = {
  // slots: name, argc, parameters, tag, flags
        1,    0,   54,    2, 0x08 /* Private */,
        3,    0,   55,    2, 0x08 /* Private */,
-       4,    1,   56,    2, 0x08 /* Private */,
-       6,    0,   59,    2, 0x08 /* Private */,
-       7,    0,   60,    2, 0x08 /* Private */,
-       8,    0,   61,    2, 0x08 /* Private */,
-       9,    0,   62,    2, 0x08 /* Private */,
-      10,    1,   63,    2, 0x08 /* Private */,
+       4,    0,   56,    2, 0x08 /* Private */,
+       5,    0,   57,    2, 0x08 /* Private */,
+       6,    0,   58,    2, 0x08 /* Private */,
+       7,    0,   59,    2, 0x08 /* Private */,
+       8,    0,   60,    2, 0x08 /* Private */,
+       9,    1,   61,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,    5,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   11,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   10,
 
        0        // eod
 };
@@ -94,7 +93,7 @@ void MainWin::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         switch (_id) {
         case 0: _t->OpenNewImg(); break;
         case 1: _t->OpenNewVideo(); break;
-        case 2: _t->ChangeCon((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 2: _t->SendImage(); break;
         case 3: _t->UpdateImage(); break;
         case 4: _t->SetVideoAutoPlay(); break;
         case 5: _t->NextFrame(); break;
