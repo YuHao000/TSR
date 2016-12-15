@@ -58,9 +58,9 @@ public:
     QLabel *label;
     QToolBox *toolBox;
     QWidget *page;
+    QVBoxLayout *verticalLayout_3;
+    QGroupBox *boxDetectArea;
     QFormLayout *formLayout;
-    QLabel *label_6;
-    QCheckBox *checkDetectArea;
     QLabel *label_2;
     QDoubleSpinBox *edtDetectTop;
     QLabel *label_3;
@@ -69,9 +69,14 @@ public:
     QDoubleSpinBox *edtDetectBottom;
     QLabel *label_5;
     QComboBox *comboDetectDiv;
+    QGroupBox *boxEnhance;
+    QFormLayout *formLayout_2;
+    QLabel *label_6;
+    QSlider *sliderSatur;
+    QCheckBox *checkHistogram;
+    QWidget *widget;
     QWidget *page_3;
     QWidget *page_2;
-    QWidget *widget;
     QMenuBar *menuBar;
     QMenu *mainMenu;
     QMenu *menu;
@@ -82,7 +87,7 @@ public:
     {
         if (MainWinClass->objectName().isEmpty())
             MainWinClass->setObjectName(QStringLiteral("MainWinClass"));
-        MainWinClass->resize(1024, 768);
+        MainWinClass->resize(443, 773);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -208,33 +213,34 @@ public:
         toolBox->setFrameShadow(QFrame::Sunken);
         page = new QWidget();
         page->setObjectName(QStringLiteral("page"));
-        page->setGeometry(QRect(0, 0, 248, 408));
-        formLayout = new QFormLayout(page);
+        page->setGeometry(QRect(0, 0, 248, 414));
+        verticalLayout_3 = new QVBoxLayout(page);
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        verticalLayout_3->setContentsMargins(-1, 7, -1, -1);
+        boxDetectArea = new QGroupBox(page);
+        boxDetectArea->setObjectName(QStringLiteral("boxDetectArea"));
+        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(boxDetectArea->sizePolicy().hasHeightForWidth());
+        boxDetectArea->setSizePolicy(sizePolicy3);
+        boxDetectArea->setMinimumSize(QSize(0, 0));
+        boxDetectArea->setMaximumSize(QSize(16777215, 16777215));
+        boxDetectArea->setCheckable(true);
+        formLayout = new QFormLayout(boxDetectArea);
         formLayout->setSpacing(6);
         formLayout->setContentsMargins(11, 11, 11, 11);
         formLayout->setObjectName(QStringLiteral("formLayout"));
-        formLayout->setHorizontalSpacing(21);
-        formLayout->setVerticalSpacing(15);
-        label_6 = new QLabel(page);
-        label_6->setObjectName(QStringLiteral("label_6"));
-
-        formLayout->setWidget(0, QFormLayout::LabelRole, label_6);
-
-        checkDetectArea = new QCheckBox(page);
-        checkDetectArea->setObjectName(QStringLiteral("checkDetectArea"));
-        sizePolicy1.setHeightForWidth(checkDetectArea->sizePolicy().hasHeightForWidth());
-        checkDetectArea->setSizePolicy(sizePolicy1);
-        checkDetectArea->setMinimumSize(QSize(30, 30));
-        checkDetectArea->setMaximumSize(QSize(30, 30));
-
-        formLayout->setWidget(0, QFormLayout::FieldRole, checkDetectArea);
-
-        label_2 = new QLabel(page);
+        formLayout->setHorizontalSpacing(11);
+        formLayout->setContentsMargins(-1, 7, -1, -1);
+        label_2 = new QLabel(boxDetectArea);
         label_2->setObjectName(QStringLiteral("label_2"));
 
-        formLayout->setWidget(1, QFormLayout::LabelRole, label_2);
+        formLayout->setWidget(0, QFormLayout::LabelRole, label_2);
 
-        edtDetectTop = new QDoubleSpinBox(page);
+        edtDetectTop = new QDoubleSpinBox(boxDetectArea);
         edtDetectTop->setObjectName(QStringLiteral("edtDetectTop"));
         sizePolicy1.setHeightForWidth(edtDetectTop->sizePolicy().hasHeightForWidth());
         edtDetectTop->setSizePolicy(sizePolicy1);
@@ -243,14 +249,14 @@ public:
         edtDetectTop->setMaximum(1);
         edtDetectTop->setSingleStep(0.01);
 
-        formLayout->setWidget(1, QFormLayout::FieldRole, edtDetectTop);
+        formLayout->setWidget(0, QFormLayout::FieldRole, edtDetectTop);
 
-        label_3 = new QLabel(page);
+        label_3 = new QLabel(boxDetectArea);
         label_3->setObjectName(QStringLiteral("label_3"));
 
-        formLayout->setWidget(2, QFormLayout::LabelRole, label_3);
+        formLayout->setWidget(1, QFormLayout::LabelRole, label_3);
 
-        edtDetectSide = new QDoubleSpinBox(page);
+        edtDetectSide = new QDoubleSpinBox(boxDetectArea);
         edtDetectSide->setObjectName(QStringLiteral("edtDetectSide"));
         sizePolicy1.setHeightForWidth(edtDetectSide->sizePolicy().hasHeightForWidth());
         edtDetectSide->setSizePolicy(sizePolicy1);
@@ -259,14 +265,14 @@ public:
         edtDetectSide->setMaximum(1);
         edtDetectSide->setSingleStep(0.01);
 
-        formLayout->setWidget(2, QFormLayout::FieldRole, edtDetectSide);
+        formLayout->setWidget(1, QFormLayout::FieldRole, edtDetectSide);
 
-        label_4 = new QLabel(page);
+        label_4 = new QLabel(boxDetectArea);
         label_4->setObjectName(QStringLiteral("label_4"));
 
-        formLayout->setWidget(3, QFormLayout::LabelRole, label_4);
+        formLayout->setWidget(2, QFormLayout::LabelRole, label_4);
 
-        edtDetectBottom = new QDoubleSpinBox(page);
+        edtDetectBottom = new QDoubleSpinBox(boxDetectArea);
         edtDetectBottom->setObjectName(QStringLiteral("edtDetectBottom"));
         sizePolicy1.setHeightForWidth(edtDetectBottom->sizePolicy().hasHeightForWidth());
         edtDetectBottom->setSizePolicy(sizePolicy1);
@@ -275,38 +281,75 @@ public:
         edtDetectBottom->setMaximum(1);
         edtDetectBottom->setSingleStep(0.01);
 
-        formLayout->setWidget(3, QFormLayout::FieldRole, edtDetectBottom);
+        formLayout->setWidget(2, QFormLayout::FieldRole, edtDetectBottom);
 
-        label_5 = new QLabel(page);
+        label_5 = new QLabel(boxDetectArea);
         label_5->setObjectName(QStringLiteral("label_5"));
 
-        formLayout->setWidget(4, QFormLayout::LabelRole, label_5);
+        formLayout->setWidget(3, QFormLayout::LabelRole, label_5);
 
-        comboDetectDiv = new QComboBox(page);
+        comboDetectDiv = new QComboBox(boxDetectArea);
         comboDetectDiv->setObjectName(QStringLiteral("comboDetectDiv"));
         sizePolicy1.setHeightForWidth(comboDetectDiv->sizePolicy().hasHeightForWidth());
         comboDetectDiv->setSizePolicy(sizePolicy1);
         comboDetectDiv->setMinimumSize(QSize(70, 30));
         comboDetectDiv->setMaximumSize(QSize(70, 30));
 
-        formLayout->setWidget(4, QFormLayout::FieldRole, comboDetectDiv);
+        formLayout->setWidget(3, QFormLayout::FieldRole, comboDetectDiv);
 
-        toolBox->addItem(page, QString::fromUtf8("\346\243\200\346\265\213\345\214\272\345\237\237\350\256\276\347\275\256"));
+
+        verticalLayout_3->addWidget(boxDetectArea);
+
+        boxEnhance = new QGroupBox(page);
+        boxEnhance->setObjectName(QStringLiteral("boxEnhance"));
+        sizePolicy3.setHeightForWidth(boxEnhance->sizePolicy().hasHeightForWidth());
+        boxEnhance->setSizePolicy(sizePolicy3);
+        boxEnhance->setCheckable(true);
+        formLayout_2 = new QFormLayout(boxEnhance);
+        formLayout_2->setSpacing(6);
+        formLayout_2->setContentsMargins(11, 11, 11, 11);
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        label_6 = new QLabel(boxEnhance);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, label_6);
+
+        sliderSatur = new QSlider(boxEnhance);
+        sliderSatur->setObjectName(QStringLiteral("sliderSatur"));
+        sliderSatur->setMinimum(100);
+        sliderSatur->setMaximum(1000);
+        sliderSatur->setPageStep(50);
+        sliderSatur->setOrientation(Qt::Horizontal);
+
+        formLayout_2->setWidget(0, QFormLayout::FieldRole, sliderSatur);
+
+        checkHistogram = new QCheckBox(boxEnhance);
+        checkHistogram->setObjectName(QStringLiteral("checkHistogram"));
+        sizePolicy3.setHeightForWidth(checkHistogram->sizePolicy().hasHeightForWidth());
+        checkHistogram->setSizePolicy(sizePolicy3);
+        checkHistogram->setMinimumSize(QSize(0, 0));
+        checkHistogram->setMaximumSize(QSize(1111111, 1111111));
+
+        formLayout_2->setWidget(1, QFormLayout::SpanningRole, checkHistogram);
+
+
+        verticalLayout_3->addWidget(boxEnhance);
+
+        widget = new QWidget(page);
+        widget->setObjectName(QStringLiteral("widget"));
+
+        verticalLayout_3->addWidget(widget);
+
+        toolBox->addItem(page, QString::fromUtf8("\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206\350\256\276\347\275\256"));
         page_3 = new QWidget();
         page_3->setObjectName(QStringLiteral("page_3"));
         toolBox->addItem(page_3, QString::fromUtf8("\351\241\265"));
         page_2 = new QWidget();
         page_2->setObjectName(QStringLiteral("page_2"));
-        page_2->setGeometry(QRect(0, 0, 248, 408));
+        page_2->setGeometry(QRect(0, 0, 248, 414));
         toolBox->addItem(page_2, QStringLiteral("Page 2"));
 
         verticalLayout->addWidget(toolBox);
-
-        widget = new QWidget(centralWidget);
-        widget->setObjectName(QStringLiteral("widget"));
-        toolBox->raise();
-
-        verticalLayout->addWidget(widget);
 
 
         gridLayout->addLayout(verticalLayout, 0, 1, 1, 1);
@@ -314,7 +357,7 @@ public:
         MainWinClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWinClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1024, 26));
+        menuBar->setGeometry(QRect(0, 0, 443, 26));
         mainMenu = new QMenu(menuBar);
         mainMenu->setObjectName(QStringLiteral("mainMenu"));
         mainMenu->setFont(font);
@@ -338,10 +381,6 @@ public:
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
-        QObject::connect(checkDetectArea, SIGNAL(clicked(bool)), edtDetectTop, SLOT(setEnabled(bool)));
-        QObject::connect(checkDetectArea, SIGNAL(clicked(bool)), edtDetectSide, SLOT(setEnabled(bool)));
-        QObject::connect(checkDetectArea, SIGNAL(clicked(bool)), edtDetectBottom, SLOT(setEnabled(bool)));
-        QObject::connect(checkDetectArea, SIGNAL(clicked(bool)), comboDetectDiv, SLOT(setEnabled(bool)));
 
         toolBox->setCurrentIndex(0);
 
@@ -361,8 +400,7 @@ public:
         btnPrevious->setText(QApplication::translate("MainWinClass", "\344\270\212\344\270\200\345\270\247", 0));
         btnNext->setText(QApplication::translate("MainWinClass", "\344\270\213\344\270\200\345\270\247", 0));
         label->setText(QApplication::translate("MainWinClass", "TextLabel", 0));
-        label_6->setText(QApplication::translate("MainWinClass", "\345\220\257\347\224\250\345\214\272\345\237\237\346\243\200\346\265\213\357\274\232", 0));
-        checkDetectArea->setText(QString());
+        boxDetectArea->setTitle(QApplication::translate("MainWinClass", "\346\243\200\346\265\213\345\214\272\345\237\237", 0));
         label_2->setText(QApplication::translate("MainWinClass", "\351\241\266\351\203\250\346\243\200\346\265\213\345\214\272\345\237\237\357\274\232", 0));
         label_3->setText(QApplication::translate("MainWinClass", "\344\276\247\350\276\271\346\243\200\346\265\213\345\214\272\345\237\237\357\274\232", 0));
         label_4->setText(QApplication::translate("MainWinClass", "\345\272\225\351\203\250\346\243\200\346\265\213\345\214\272\345\237\237\357\274\232", 0));
@@ -374,7 +412,10 @@ public:
          << QApplication::translate("MainWinClass", "/ 4", 0)
          << QApplication::translate("MainWinClass", "/ 8", 0)
         );
-        toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\346\243\200\346\265\213\345\214\272\345\237\237\350\256\276\347\275\256", 0));
+        boxEnhance->setTitle(QApplication::translate("MainWinClass", "\345\233\276\345\203\217\345\242\236\345\274\272", 0));
+        label_6->setText(QApplication::translate("MainWinClass", "\351\245\261\345\222\214\345\272\246\357\274\232", 0));
+        checkHistogram->setText(QApplication::translate("MainWinClass", "\347\233\264\346\226\271\345\233\276\345\235\207\350\241\241\345\214\226", 0));
+        toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206\350\256\276\347\275\256", 0));
         toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\351\241\265", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));

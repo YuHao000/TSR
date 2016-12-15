@@ -1,4 +1,4 @@
-#ifndef TSR_H
+﻿#ifndef TSR_H
 #define TSR_H
 
 #include <QThread>
@@ -10,9 +10,17 @@
 
 typedef struct {
 	enum {Idle, ReadImg, Step1, Step2, Step3} ProcessStep;
-	bool DetectAreaEnable;
+
+	// 检测区域设置
+	bool DetectAreaEnabled;
 	double DetectArea[3];
 	int DetectDiv;
+
+	// 图像增强设置
+	bool EnhanceEnabled;
+	int Saturation;
+	bool Histogram;
+
 	int k;
 }TSRParam_t;
 
@@ -39,18 +47,16 @@ protected:
 	void run();
 
 private:
+	TSRParam_t currentState;
 	int64 startTime;
 	int64 endTime;
 	cv::Mat img;
-	cv::Rect ROI;
-
-	// ROI
-	bool ROIEnable;
-	double ROITop, ROIBottom, ROISide;
 
 	void A(int k);
 	void GetROIImage();
 	void OutputROIImage();
+	void SaturationEnhance();
+	void HistogramEqualize();
 };
 
 #endif

@@ -31,13 +31,25 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 
 	connect(ui.conScroll, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
 
+	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
+
 	// Video control box
 	connect(ui.btnPlay, SIGNAL(clicked()), this, SLOT(SetVideoAutoPlay()));
 	connect(ui.btnNext, SIGNAL(clicked()), this, SLOT(NextFrame()));
 	connect(ui.btnPrevious, SIGNAL(clicked()), this, SLOT(PreviousFrame()));
 	connect(ui.ProgressBar, SIGNAL(valueChanged(int)), this, SLOT(CaptureFrame(int)));
 
-	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
+	// 检测区域
+	connect(ui.boxDetectArea, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	connect(ui.edtDetectTop, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	connect(ui.edtDetectBottom, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	connect(ui.edtDetectSide, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	connect(ui.comboDetectDiv, SIGNAL(currentIndexChanged(int)), this, SLOT(SendImage()));
+
+	// 图像增强
+	connect(ui.boxEnhance, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	connect(ui.sliderSatur, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
+	connect(ui.checkHistogram, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
 }
 
 // Open New Image File Slot
@@ -89,12 +101,24 @@ void MainWin::OpenNewVideo() {
 
 // Send current image to TSR Algorithm module
 void MainWin::SendImage() {
+	if (ImgRead.rows == 0 || ImgRead.cols == 0)
+		return;
+
 	TSRParamLock.lock();
-	TSRParam.DetectAreaEnable = ui.checkDetectArea->isChecked();
+
+	TSRParam.DetectAreaEnabled = ui.boxDetectArea->isChecked();
 	TSRParam.DetectArea[0] = ui.edtDetectTop->value();
 	TSRParam.DetectArea[1] = ui.edtDetectBottom->value();
 	TSRParam.DetectArea[2] = ui.edtDetectSide->value();
 	TSRParam.DetectDiv = ui.comboDetectDiv->currentIndex();
+
+
+	TSRParam.EnhanceEnabled = ui.boxEnhance->isChecked();
+	TSRParam.Saturation = ui.sliderSatur->value();
+	TSRParam.Histogram = ui.checkHistogram->isChecked();
+
+
+
 	TSRParam.k = 2 * ui.conScroll->value() - 1;
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -137,7 +161,7 @@ void MainWin::CaptureFrame(int val) {
 
 	ImgReadLock.lock();
 	capture >> ImgRead;
-	if (ui.checkDetectArea->isChecked()) {
+	if (ui.boxDetectArea->isChecked()) {
 		ImgDisplay = ImgRead.clone();
 		double x1 = ImgDisplay.cols * ui.edtDetectSide->value() / 2;
 		double x2 = ImgDisplay.cols - x1;
@@ -200,15 +224,16 @@ void MainWin::GetSettings() {
 	move(mySetting.value("WinPos", QPoint(0, 0)).toPoint());
 
 	// Detect Area
-	ui.checkDetectArea->setChecked(mySetting.value("EnableDetectArea", false).toBool());
+	ui.boxDetectArea->setChecked(mySetting.value("DetectAreaEnabled", false).toBool());
 	ui.edtDetectTop->setValue(mySetting.value("DetectTop", 0.00).toDouble());
 	ui.edtDetectBottom->setValue(mySetting.value("DetectBottom", 0.00).toDouble());
 	ui.edtDetectSide->setValue(mySetting.value("DetectSide", 0.00).toDouble());
 	ui.comboDetectDiv->setCurrentIndex(mySetting.value("DetectDiv", 0).toInt());
-	ui.edtDetectTop->setEnabled(ui.checkDetectArea->isChecked());
-	ui.edtDetectBottom->setEnabled(ui.checkDetectArea->isChecked());
-	ui.edtDetectSide->setEnabled(ui.checkDetectArea->isChecked());
-	ui.comboDetectDiv->setEnabled(ui.checkDetectArea->isChecked());
+
+	// Image Enhancement
+	ui.boxEnhance->setChecked(mySetting.value("EnhanceEnabled", false).toBool());
+	ui.sliderSatur->setValue(mySetting.value("Saturation", 100).toInt());
+	ui.checkHistogram->setChecked(mySetting.value("Histogram", false).toBool());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -217,14 +242,21 @@ void MainWin::closeEvent(QCloseEvent *event) {
 
 	/* Save program settings */
 	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
+
 	// Window
 	mySetting.setValue("WinSize", size());
 	mySetting.setValue("WinPos", pos());
+
 	// Detect Area
-	mySetting.setValue("EnableDetectArea", ui.checkDetectArea->isChecked());
+	mySetting.setValue("DetectAreaEnabled", ui.boxDetectArea->isChecked());
 	mySetting.setValue("DetectTop", ui.edtDetectTop->value());
 	mySetting.setValue("DetectSide", ui.edtDetectSide->value());
 	mySetting.setValue("DetectBottom", ui.edtDetectBottom->value());
 	mySetting.setValue("DetectDiv", ui.comboDetectDiv->currentIndex());
+
+	// Image Enhancement
+	mySetting.setValue("EnhanceEnabled", ui.boxEnhance->isChecked());
+	mySetting.setValue("Saturation", ui.sliderSatur->value());
+	mySetting.setValue("Histogram", ui.checkHistogram->isChecked());
 }
 
