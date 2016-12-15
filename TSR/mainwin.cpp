@@ -1,4 +1,4 @@
-#include "mainwin.h"
+ï»¿#include "mainwin.h"
 
 #ifdef  _MSC_VER
 #pragma execution_character_set("utf-8")
@@ -14,6 +14,8 @@ Mat ImgOut;
 
 MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.setupUi(this);
+
+	ui.menuBar->hide();
 
 	ui.mainToolBar->addAction(ui.actionOpenImg);
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
@@ -35,7 +37,10 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
 }
 
-MainWin::~MainWin() {}
+MainWin::~MainWin() {
+	if (capture.isOpened())
+		capture.release();
+}
 
 // Open New Image File Slot
 void MainWin::OpenNewImg() {
@@ -46,8 +51,8 @@ void MainWin::OpenNewImg() {
 	// Disable Video Control Box
 	ui.VideoControlBox->setEnabled(false);
 
-	QString path = QFileDialog::getOpenFileName(this, "´ò¿ªÍ¼Æ¬ÎÄ¼ş",
-		"D:\\Pictures\\SJTU_pic\\sjtuvis", "Í¼Æ¬(*.png *.jpg)");
+	QString path = QFileDialog::getOpenFileName(this, "æ‰“å¼€å›¾ç‰‡æ–‡ä»¶",
+		"D:\\Pictures\\SJTU_pic\\sjtuvis", "å›¾ç‰‡(*.png *.jpg)");
 
 	if (!path.isEmpty()) {
 		ImgReadLock.lock();
@@ -71,18 +76,19 @@ void MainWin::OpenNewVideo() {
 	// Disable Video Control Box First
 	ui.VideoControlBox->setEnabled(false);
 
-	QString path = QFileDialog::getOpenFileName(this, "´ò¿ªÊÓÆµÎÄ¼ş",
-		"D:\\Desktop", "ÊÓÆµ(*.mov)");
+	QString path = QFileDialog::getOpenFileName(this, "æ‰“å¼€è§†é¢‘æ–‡ä»¶",
+		"D:\\Desktop", "è§†é¢‘(*.mov)");
 
 	if (!path.isEmpty()) {
 		capture.open(UTF8ToGBK(path.toStdString().data()));
 		ui.VideoControlBox->setEnabled(true);
 		// Reset autoplay button
 		AutoPlay = false;
-		ui.btnPlay->setText("²¥·Å");
+		ui.btnPlay->setText("æ’­æ”¾");
 		ui.ProgressBar->setMaximum(capture.get(CAP_PROP_FRAME_COUNT) - 1);
+		ui.ProgressBar->setValue(0);
 		// Display first frame
-		NextFrame();
+		CaptureFrame(0);
 	}
 }
 
@@ -112,14 +118,14 @@ void MainWin::UpdateImage() {
 
 // Captuer Previous Frame
 void MainWin::PreviousFrame() {
-	CaptureFrame(ui.ProgressBar->value());
 	ui.ProgressBar->setValue(ui.ProgressBar->value() - 1);
+	CaptureFrame(ui.ProgressBar->value());
 }
 
 // Captuer Next Frame
 void MainWin::NextFrame() {
-	CaptureFrame(ui.ProgressBar->value());
 	ui.ProgressBar->setValue(ui.ProgressBar->value() + 1);
+	CaptureFrame(ui.ProgressBar->value());
 }
 
 // Capture One Frame
@@ -146,11 +152,11 @@ void MainWin::CaptureFrame(int val) {
 void MainWin::SetVideoAutoPlay() {
 	if (AutoPlay) {
 		AutoPlay = false;
-		ui.btnPlay->setText("²¥·Å");
+		ui.btnPlay->setText("æ’­æ”¾");
 	}
 	else {
 		AutoPlay = true;
-		ui.btnPlay->setText("ÔİÍ£");
+		ui.btnPlay->setText("æš‚åœ");
 	}
 }
 
