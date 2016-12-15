@@ -20,6 +20,10 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.mainToolBar->addAction(ui.actionOpenImg);
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
 
+	// Get Settings
+	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
+	resize(mySetting.value("WinSize", QSize(1024, 768)).toSize());
+
 	myTSR.start();
 
 	// Action
@@ -35,11 +39,6 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.ProgressBar, SIGNAL(valueChanged(int)), this, SLOT(CaptureFrame(int)));
 
 	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
-}
-
-MainWin::~MainWin() {
-	if (capture.isOpened())
-		capture.release();
 }
 
 // Open New Image File Slot
@@ -174,5 +173,14 @@ string MainWin::UTF8ToGBK(const char* strUTF8)
 	if (wszGBK) delete[] wszGBK;
 	if (szGBK) delete[] szGBK;
 	return strTemp;
+}
+
+void MainWin::closeEvent(QCloseEvent *event) {
+	if (capture.isOpened())
+		capture.release();
+
+	// Save program settings
+	QSettings mySetting(QSettings::IniFormat, QSettings::UserScope, "GMF", "TSR");
+	mySetting.setValue("WinSize", size());
 }
 

@@ -7,6 +7,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QTextCodec>
+#include <QSettings>
 #include <windows.h>
 #include <string>
 #include "ui_mainwin.h"
@@ -20,7 +21,9 @@ class MainWin : public QMainWindow
 
 public:
 	MainWin(QWidget *parent = 0);
-	~MainWin();
+
+protected:
+	void closeEvent(QCloseEvent * event);
 
 private:
 	Ui::MainWinClass ui;
