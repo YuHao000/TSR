@@ -727,7 +727,7 @@
   </connection>
   <connection>
    <sender>boxGrayscale</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>checkHistogram</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>

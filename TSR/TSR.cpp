@@ -121,7 +121,8 @@ void TSR::SaturationEnhance() {
 
 // 直方图均衡化
 void TSR::HistogramEqualize() {
-	//equalizeHist(img, img);
+	if (currentState.Histogram && currentState.EnhanceEnabled)
+		equalizeHist(img, img);
 }
 
 // 提取灰度图
@@ -132,15 +133,36 @@ void TSR::ExtractGrayscale() {
 	vector<Mat> channels;
 	switch (currentState.GrayscaleMethed)
 	{
+	// 灰度值
 	case 0:
+		cvtColor(img, img, CV_BGR2GRAY);
 		break;
 
 	// Hue分量
 	case 1:
 		cvtColor(img, img, CV_BGR2HSV);	
 		split(img, channels);
+		img = channels[0];
+		break;
+
+	// R component
+	case 2:
+		split(img, channels);
+		img = channels[2];
+		break;
+
+	// G component
+	case 3:
+		split(img, channels);
 		img = channels[1];
 		break;
+
+	// B component
+	case 4:
+		split(img, channels);
+		img = channels[0];
+		break;
+
 
 	default:
 		break;

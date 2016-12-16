@@ -435,7 +435,7 @@ public:
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
-        QObject::connect(boxGrayscale, SIGNAL(clicked(bool)), checkHistogram, SLOT(setEnabled(bool)));
+        QObject::connect(boxGrayscale, SIGNAL(toggled(bool)), checkHistogram, SLOT(setEnabled(bool)));
 
         toolBox->setCurrentIndex(0);
 

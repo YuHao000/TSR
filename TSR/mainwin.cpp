@@ -126,7 +126,7 @@ void MainWin::SendImage() {
 
 	TSRParam.EnhanceEnabled = ui.boxEnhance->isChecked();
 	TSRParam.Saturation = ui.sliderSatur->value();
-	TSRParam.Histogram = ui.checkHistogram->isChecked();
+	TSRParam.Histogram = ui.checkHistogram->isChecked() && ui.checkHistogram->isEnabled();
 
 	TSRParam.GrayscaleEnabled = ui.boxGrayscale->isChecked();
 	TSRParam.GrayscaleMethed = GetGrayscaleMethod();
