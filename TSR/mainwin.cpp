@@ -21,11 +21,9 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
 	ui.mainToolBar->addAction(ui.actionResend);
 
-	GrayscaleRadios.push_back(ui.radioButton);
-	GrayscaleRadios.push_back(ui.radioButton_2);
-	GrayscaleRadios.push_back(ui.radioButton_3);
-	GrayscaleRadios.push_back(ui.radioButton_4);
-	GrayscaleRadios.push_back(ui.radioButton_5);
+	Binaryboxs.push_back(ui.boxBinaryHSV);
+	Binaryboxs.push_back(ui.boxBinaryRGB);
+	Binaryboxs.push_back(ui.boxBinarySVF);
 
 	GetSettings();
 	myTSR.start();
@@ -35,8 +33,6 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.actionOpenVideo, SIGNAL(triggered()), this, SLOT(OpenNewVideo()));
 	connect(ui.actionResend, SIGNAL(triggered()), this, SLOT(SendImage()));
 
-	connect(ui.conScroll, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
-
 	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
 
 	// Video control box
@@ -45,23 +41,19 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.btnPrevious, SIGNAL(clicked()), this, SLOT(PreviousFrame()));
 	connect(ui.ProgressBar, SIGNAL(valueChanged(int)), this, SLOT(CaptureFrame(int)));
 
-	// 检测区域
-	connect(ui.boxDetectArea, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	connect(ui.edtDetectTop, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	connect(ui.edtDetectBottom, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	connect(ui.edtDetectSide, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	connect(ui.comboDetectDiv, SIGNAL(currentIndexChanged(int)), this, SLOT(SendImage()));
+	//// 检测区域
+	//connect(ui.boxDetectArea, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	//connect(ui.edtDetectTop, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	//connect(ui.edtDetectBottom, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	//connect(ui.edtDetectSide, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
+	//connect(ui.comboDetectDiv, SIGNAL(currentIndexChanged(int)), this, SLOT(SendImage()));
 
-	// 图像增强
-	connect(ui.boxEnhance, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	connect(ui.sliderSatur, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
-	connect(ui.checkHistogram, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	//// 图像增强
+	//connect(ui.boxEnhance, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
+	//connect(ui.sliderSatur, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
+	//connect(ui.checkHistogram, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
 
-	// 灰度图提取
-	connect(ui.boxGrayscale, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	for (auto it = GrayscaleRadios.begin(); it != GrayscaleRadios.end(); it++) {
-		connect(*it, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	}
+	//// 二值化
 }
 
 // Open New Image File Slot
@@ -128,10 +120,18 @@ void MainWin::SendImage() {
 	TSRParam.Saturation = ui.sliderSatur->value();
 	TSRParam.Histogram = ui.checkHistogram->isChecked() && ui.checkHistogram->isEnabled();
 
-	TSRParam.GrayscaleEnabled = ui.boxGrayscale->isChecked();
-	TSRParam.GrayscaleMethed = GetGrayscaleMethod();
-
-	TSRParam.k = 2 * ui.conScroll->value() - 1;
+	TSRParam.BinaryMethod = GetBoxMethod(Binaryboxs);
+	TSRParam.BinaryHmin = ui.edtBinaryHmin->value();
+	TSRParam.BinaryHmax = ui.edtBinaryHmax->value();
+	TSRParam.BinarySmin = ui.edtBinarySmin->value();
+	TSRParam.BinaryVmin = ui.edtBinaryVmin->value();
+	TSRParam.BinaryRmin = ui.edtBinaryRmin->value();
+	TSRParam.BinaryRmax = ui.edtBinaryRmax->value();
+	TSRParam.BinaryGmin = ui.edtBinaryGmin->value();
+	TSRParam.BinaryGmax = ui.edtBinaryGmax->value();
+	TSRParam.BinaryBmin = ui.edtBinaryBmin->value();
+	TSRParam.BinaryBmax = ui.edtBinaryBmax->value();
+	TSRParam.BinaryD = ui.edtBinaryD->value();
 
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -140,9 +140,17 @@ void MainWin::SendImage() {
 // TSR Algorithm callback slot
 // Image Processing Finished
 void MainWin::UpdateImage() {
+	ImgReadLock.lock();
 	ImgOutLock.lock();
+
 	((ImageViewer *)ui.PicArea)->setPic(1, ImgOut);
+
+	Mat tmp(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(0,0,0));
+	ImgRead(Rect(0,0,ImgOut.cols,ImgOut.rows)).copyTo(tmp, ImgOut);
+	((ImageViewer *)ui.PicArea)->setPic(2, tmp);
+
 	ImgOutLock.unlock();
+	ImgReadLock.unlock();
 
 	TSRResultLock.lock();
 	ui.label->setText(QString::number(TSRResult.ElapseTime));
@@ -248,9 +256,19 @@ void MainWin::GetSettings() {
 	ui.sliderSatur->setValue(mySetting.value("Saturation", 100).toInt());
 	ui.checkHistogram->setChecked(mySetting.value("Histogram", false).toBool());
 
-	// Grayscale Extract
-	ui.boxGrayscale->setChecked(mySetting.value("GrayscaleEnabled", true).toBool());
-	SetGaryscaleMethod(mySetting.value("GrayscaleMethed", 1).toInt());
+	// Binaryzation
+	SetBoxMethod(Binaryboxs, mySetting.value("BinaryMethod", 0).toInt());
+	ui.edtBinaryHmin->setValue(mySetting.value("BinaryHmin", 0).toInt());
+	ui.edtBinaryHmax->setValue(mySetting.value("BinaryHmax", 0).toInt());
+	ui.edtBinarySmin->setValue(mySetting.value("BinarySmin", 0).toInt());
+	ui.edtBinaryVmin->setValue(mySetting.value("BinaryVmin", 0).toInt());
+	ui.edtBinaryRmin->setValue(mySetting.value("BinaryRmin", 0).toInt());
+	ui.edtBinaryRmax->setValue(mySetting.value("BinaryRmax", 0).toInt());
+	ui.edtBinaryGmin->setValue(mySetting.value("BinaryGmin", 0).toInt());
+	ui.edtBinaryGmax->setValue(mySetting.value("BinaryGmax", 0).toInt());
+	ui.edtBinaryBmin->setValue(mySetting.value("BinaryBmin", 0).toInt());
+	ui.edtBinaryBmax->setValue(mySetting.value("BinaryBmax", 0).toInt());
+	ui.edtBinaryD->setValue(mySetting.value("BinaryD", 0).toInt());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -276,23 +294,56 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("Saturation", ui.sliderSatur->value());
 	mySetting.setValue("Histogram", ui.checkHistogram->isChecked());
 
-	// Grayscale Extract
-	mySetting.setValue("GrayscaleEnabled", ui.boxGrayscale->isChecked());
-	mySetting.setValue("GrayscaleMethed", GetGrayscaleMethod());
+	// Binaryzation
+	mySetting.setValue("BinaryMethod", GetBoxMethod(Binaryboxs));
+	mySetting.setValue("BinaryHmin", ui.edtBinaryHmin->value());
+	mySetting.setValue("BinaryHmax", ui.edtBinaryHmax->value());
+	mySetting.setValue("BinarySmin", ui.edtBinarySmin->value());
+	mySetting.setValue("BinaryVmin", ui.edtBinaryVmin->value());
+	mySetting.setValue("BinaryRmin", ui.edtBinaryRmin->value());
+	mySetting.setValue("BinaryRmax", ui.edtBinaryRmax->value());
+	mySetting.setValue("BinaryGmin", ui.edtBinaryGmin->value());
+	mySetting.setValue("BinaryGmax", ui.edtBinaryGmax->value());
+	mySetting.setValue("BinaryBmin", ui.edtBinaryBmin->value());
+	mySetting.setValue("BinaryBmax", ui.edtBinaryBmax->value());
+	mySetting.setValue("BinaryD", ui.edtBinaryD->value());
 }
 
-// 根据单选按钮组的设置确定灰度图提取方法
-int MainWin::GetGrayscaleMethod() {
-	for (auto it = GrayscaleRadios.begin(); it != GrayscaleRadios.end(); it++) {
+// 读取单选按钮组的设置
+int MainWin::GetRadioMethod(std::vector<QRadioButton *> radios) {
+	for (auto it = radios.begin(); it != radios.end(); it++) {
 		if ((*it)->isChecked())
-			return it - GrayscaleRadios.begin();
+			return it - radios.begin();
 	}
 
 	return -1;
 }
 
-// 设置灰度图按钮组的状态
-void MainWin::SetGaryscaleMethod(int val) {
-	GrayscaleRadios[val]->setChecked(true);
+// 设置按钮组的状态
+void MainWin::SetRadioMethod(std::vector<QRadioButton *> radios, int val) {
+	radios[val]->setChecked(true);
 }
+
+// 读取GroupBox组的设置
+int MainWin::GetBoxMethod(std::vector<QGroupBox *> boxs) {
+	for (auto it = boxs.begin(); it != boxs.end(); it++) {
+		if ((*it)->isChecked())
+			return it - boxs.begin();
+	}
+
+	return -1;
+}
+
+// 设置GroupBox组的状态
+void MainWin::SetBoxMethod(std::vector<QGroupBox *> boxs, int val) {
+	for (int i = 0; i < boxs.size(); i++) {
+		if (i == val) {
+			boxs[i]->setChecked(true);
+		}
+		else {
+			boxs[i]->setChecked(false);
+		}
+	}
+}
+
 

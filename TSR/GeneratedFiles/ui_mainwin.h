@@ -28,6 +28,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QToolBox>
@@ -55,11 +56,13 @@ public:
     QPushButton *btnPrevious;
     QPushButton *btnNext;
     QSlider *ProgressBar;
-    QSlider *conScroll;
     QLabel *label;
     QToolBox *toolBox;
     QWidget *page;
-    QVBoxLayout *verticalLayout_3;
+    QFormLayout *formLayout_4;
+    QHBoxLayout *horizontalLayout_2;
+    QRadioButton *radioTypeLimit;
+    QRadioButton *radioTypeWarning;
     QGroupBox *boxDetectArea;
     QFormLayout *formLayout;
     QLabel *label_2;
@@ -75,15 +78,39 @@ public:
     QLabel *label_6;
     QSlider *sliderSatur;
     QCheckBox *checkHistogram;
-    QGroupBox *boxGrayscale;
-    QFormLayout *formLayout_3;
-    QRadioButton *radioButton;
-    QRadioButton *radioButton_2;
-    QRadioButton *radioButton_3;
-    QRadioButton *radioButton_4;
-    QRadioButton *radioButton_5;
     QWidget *widget;
     QWidget *page_3;
+    QGridLayout *gridLayout_2;
+    QGroupBox *boxBinaryRGB;
+    QGridLayout *gridLayout_4;
+    QLabel *label_12;
+    QSpinBox *edtBinaryRmin;
+    QLabel *label_11;
+    QSpinBox *edtBinaryRmax;
+    QLabel *label_14;
+    QSpinBox *edtBinaryGmin;
+    QLabel *label_13;
+    QSpinBox *edtBinaryGmax;
+    QLabel *label_16;
+    QSpinBox *edtBinaryBmin;
+    QLabel *label_15;
+    QSpinBox *edtBinaryBmax;
+    QWidget *widget_2;
+    QGroupBox *boxBinarySVF;
+    QGridLayout *gridLayout_5;
+    QLabel *label_17;
+    QSpinBox *edtBinaryD;
+    QGroupBox *boxBinaryHSV;
+    QGridLayout *gridLayout_3;
+    QLabel *label_7;
+    QSpinBox *edtBinaryHmin;
+    QLabel *label_10;
+    QSpinBox *edtBinarySmin;
+    QLabel *label_9;
+    QSpinBox *edtBinaryVmin;
+    QSpinBox *edtBinaryHmax;
+    QLabel *label_8;
+    QGroupBox *groupBox;
     QWidget *page_2;
     QMenuBar *menuBar;
     QMenu *mainMenu;
@@ -95,7 +122,7 @@ public:
     {
         if (MainWinClass->objectName().isEmpty())
             MainWinClass->setObjectName(QStringLiteral("MainWinClass"));
-        MainWinClass->resize(443, 773);
+        MainWinClass->resize(688, 881);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -186,20 +213,6 @@ public:
 
         verticalLayout->addWidget(VideoControlBox);
 
-        conScroll = new QSlider(centralWidget);
-        conScroll->setObjectName(QStringLiteral("conScroll"));
-        sizePolicy1.setHeightForWidth(conScroll->sizePolicy().hasHeightForWidth());
-        conScroll->setSizePolicy(sizePolicy1);
-        conScroll->setMinimumSize(QSize(250, 30));
-        conScroll->setMaximumSize(QSize(250, 30));
-        conScroll->setMinimum(1);
-        conScroll->setMaximum(50);
-        conScroll->setSingleStep(1);
-        conScroll->setValue(1);
-        conScroll->setOrientation(Qt::Horizontal);
-
-        verticalLayout->addWidget(conScroll);
-
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
         sizePolicy1.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
@@ -221,12 +234,29 @@ public:
         toolBox->setFrameShadow(QFrame::Sunken);
         page = new QWidget();
         page->setObjectName(QStringLiteral("page"));
-        page->setGeometry(QRect(0, -30, 234, 423));
-        verticalLayout_3 = new QVBoxLayout(page);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(-1, 7, -1, -1);
+        page->setGeometry(QRect(0, 0, 248, 553));
+        formLayout_4 = new QFormLayout(page);
+        formLayout_4->setSpacing(6);
+        formLayout_4->setContentsMargins(11, 11, 11, 11);
+        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        formLayout_4->setContentsMargins(-1, 7, -1, -1);
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        radioTypeLimit = new QRadioButton(page);
+        radioTypeLimit->setObjectName(QStringLiteral("radioTypeLimit"));
+        radioTypeLimit->setChecked(true);
+
+        horizontalLayout_2->addWidget(radioTypeLimit);
+
+        radioTypeWarning = new QRadioButton(page);
+        radioTypeWarning->setObjectName(QStringLiteral("radioTypeWarning"));
+
+        horizontalLayout_2->addWidget(radioTypeWarning);
+
+
+        formLayout_4->setLayout(0, QFormLayout::FieldRole, horizontalLayout_2);
+
         boxDetectArea = new QGroupBox(page);
         boxDetectArea->setObjectName(QStringLiteral("boxDetectArea"));
         QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -306,7 +336,7 @@ public:
         formLayout->setWidget(3, QFormLayout::FieldRole, comboDetectDiv);
 
 
-        verticalLayout_3->addWidget(boxDetectArea);
+        formLayout_4->setWidget(1, QFormLayout::SpanningRole, boxDetectArea);
 
         boxEnhance = new QGroupBox(page);
         boxEnhance->setObjectName(QStringLiteral("boxEnhance"));
@@ -342,65 +372,237 @@ public:
         formLayout_2->setWidget(1, QFormLayout::SpanningRole, checkHistogram);
 
 
-        verticalLayout_3->addWidget(boxEnhance);
-
-        boxGrayscale = new QGroupBox(page);
-        boxGrayscale->setObjectName(QStringLiteral("boxGrayscale"));
-        sizePolicy3.setHeightForWidth(boxGrayscale->sizePolicy().hasHeightForWidth());
-        boxGrayscale->setSizePolicy(sizePolicy3);
-        boxGrayscale->setMinimumSize(QSize(0, 100));
-        boxGrayscale->setCheckable(true);
-        formLayout_3 = new QFormLayout(boxGrayscale);
-        formLayout_3->setSpacing(6);
-        formLayout_3->setContentsMargins(11, 11, 11, 11);
-        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
-        formLayout_3->setContentsMargins(-1, 7, -1, -1);
-        radioButton = new QRadioButton(boxGrayscale);
-        radioButton->setObjectName(QStringLiteral("radioButton"));
-        radioButton->setMinimumSize(QSize(0, 30));
-
-        formLayout_3->setWidget(0, QFormLayout::LabelRole, radioButton);
-
-        radioButton_2 = new QRadioButton(boxGrayscale);
-        radioButton_2->setObjectName(QStringLiteral("radioButton_2"));
-        radioButton_2->setMinimumSize(QSize(0, 30));
-        radioButton_2->setChecked(true);
-
-        formLayout_3->setWidget(0, QFormLayout::FieldRole, radioButton_2);
-
-        radioButton_3 = new QRadioButton(boxGrayscale);
-        radioButton_3->setObjectName(QStringLiteral("radioButton_3"));
-        radioButton_3->setMinimumSize(QSize(0, 30));
-
-        formLayout_3->setWidget(1, QFormLayout::LabelRole, radioButton_3);
-
-        radioButton_4 = new QRadioButton(boxGrayscale);
-        radioButton_4->setObjectName(QStringLiteral("radioButton_4"));
-        radioButton_4->setMinimumSize(QSize(0, 30));
-
-        formLayout_3->setWidget(1, QFormLayout::FieldRole, radioButton_4);
-
-        radioButton_5 = new QRadioButton(boxGrayscale);
-        radioButton_5->setObjectName(QStringLiteral("radioButton_5"));
-        radioButton_5->setMinimumSize(QSize(0, 30));
-
-        formLayout_3->setWidget(2, QFormLayout::LabelRole, radioButton_5);
-
-
-        verticalLayout_3->addWidget(boxGrayscale);
+        formLayout_4->setWidget(2, QFormLayout::SpanningRole, boxEnhance);
 
         widget = new QWidget(page);
         widget->setObjectName(QStringLiteral("widget"));
 
-        verticalLayout_3->addWidget(widget);
+        formLayout_4->setWidget(3, QFormLayout::FieldRole, widget);
 
-        toolBox->addItem(page, QString::fromUtf8("\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206\350\256\276\347\275\256"));
+        toolBox->addItem(page, QString::fromUtf8("\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206"));
         page_3 = new QWidget();
         page_3->setObjectName(QStringLiteral("page_3"));
-        toolBox->addItem(page_3, QString::fromUtf8("\351\241\265"));
+        page_3->setGeometry(QRect(0, 0, 248, 553));
+        page_3->setToolTipDuration(1);
+        gridLayout_2 = new QGridLayout(page_3);
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setContentsMargins(11, 11, 11, 11);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        gridLayout_2->setVerticalSpacing(11);
+        gridLayout_2->setContentsMargins(-1, 7, -1, -1);
+        boxBinaryRGB = new QGroupBox(page_3);
+        boxBinaryRGB->setObjectName(QStringLiteral("boxBinaryRGB"));
+        boxBinaryRGB->setEnabled(true);
+        sizePolicy3.setHeightForWidth(boxBinaryRGB->sizePolicy().hasHeightForWidth());
+        boxBinaryRGB->setSizePolicy(sizePolicy3);
+        boxBinaryRGB->setCheckable(true);
+        boxBinaryRGB->setChecked(false);
+        gridLayout_4 = new QGridLayout(boxBinaryRGB);
+        gridLayout_4->setSpacing(6);
+        gridLayout_4->setContentsMargins(11, 11, 11, 11);
+        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        label_12 = new QLabel(boxBinaryRGB);
+        label_12->setObjectName(QStringLiteral("label_12"));
+        QSizePolicy sizePolicy4(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(label_12->sizePolicy().hasHeightForWidth());
+        label_12->setSizePolicy(sizePolicy4);
+
+        gridLayout_4->addWidget(label_12, 0, 0, 1, 1);
+
+        edtBinaryRmin = new QSpinBox(boxBinaryRGB);
+        edtBinaryRmin->setObjectName(QStringLiteral("edtBinaryRmin"));
+        edtBinaryRmin->setMinimum(0);
+        edtBinaryRmin->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryRmin, 0, 1, 1, 1);
+
+        label_11 = new QLabel(boxBinaryRGB);
+        label_11->setObjectName(QStringLiteral("label_11"));
+        sizePolicy2.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
+        label_11->setSizePolicy(sizePolicy2);
+        label_11->setAlignment(Qt::AlignCenter);
+
+        gridLayout_4->addWidget(label_11, 0, 2, 1, 1);
+
+        edtBinaryRmax = new QSpinBox(boxBinaryRGB);
+        edtBinaryRmax->setObjectName(QStringLiteral("edtBinaryRmax"));
+        edtBinaryRmax->setMinimum(0);
+        edtBinaryRmax->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryRmax, 0, 3, 1, 1);
+
+        label_14 = new QLabel(boxBinaryRGB);
+        label_14->setObjectName(QStringLiteral("label_14"));
+        sizePolicy4.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
+        label_14->setSizePolicy(sizePolicy4);
+
+        gridLayout_4->addWidget(label_14, 1, 0, 1, 1);
+
+        edtBinaryGmin = new QSpinBox(boxBinaryRGB);
+        edtBinaryGmin->setObjectName(QStringLiteral("edtBinaryGmin"));
+        edtBinaryGmin->setMinimum(0);
+        edtBinaryGmin->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryGmin, 1, 1, 1, 1);
+
+        label_13 = new QLabel(boxBinaryRGB);
+        label_13->setObjectName(QStringLiteral("label_13"));
+        sizePolicy2.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
+        label_13->setSizePolicy(sizePolicy2);
+        label_13->setAlignment(Qt::AlignCenter);
+
+        gridLayout_4->addWidget(label_13, 1, 2, 1, 1);
+
+        edtBinaryGmax = new QSpinBox(boxBinaryRGB);
+        edtBinaryGmax->setObjectName(QStringLiteral("edtBinaryGmax"));
+        edtBinaryGmax->setMinimum(0);
+        edtBinaryGmax->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryGmax, 1, 3, 1, 1);
+
+        label_16 = new QLabel(boxBinaryRGB);
+        label_16->setObjectName(QStringLiteral("label_16"));
+        sizePolicy4.setHeightForWidth(label_16->sizePolicy().hasHeightForWidth());
+        label_16->setSizePolicy(sizePolicy4);
+
+        gridLayout_4->addWidget(label_16, 2, 0, 1, 1);
+
+        edtBinaryBmin = new QSpinBox(boxBinaryRGB);
+        edtBinaryBmin->setObjectName(QStringLiteral("edtBinaryBmin"));
+        edtBinaryBmin->setMinimum(0);
+        edtBinaryBmin->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryBmin, 2, 1, 1, 1);
+
+        label_15 = new QLabel(boxBinaryRGB);
+        label_15->setObjectName(QStringLiteral("label_15"));
+        sizePolicy2.setHeightForWidth(label_15->sizePolicy().hasHeightForWidth());
+        label_15->setSizePolicy(sizePolicy2);
+        label_15->setAlignment(Qt::AlignCenter);
+
+        gridLayout_4->addWidget(label_15, 2, 2, 1, 1);
+
+        edtBinaryBmax = new QSpinBox(boxBinaryRGB);
+        edtBinaryBmax->setObjectName(QStringLiteral("edtBinaryBmax"));
+        edtBinaryBmax->setMinimum(0);
+        edtBinaryBmax->setMaximum(255);
+
+        gridLayout_4->addWidget(edtBinaryBmax, 2, 3, 1, 1);
+
+
+        gridLayout_2->addWidget(boxBinaryRGB, 1, 0, 1, 1);
+
+        widget_2 = new QWidget(page_3);
+        widget_2->setObjectName(QStringLiteral("widget_2"));
+
+        gridLayout_2->addWidget(widget_2, 4, 0, 1, 1);
+
+        boxBinarySVF = new QGroupBox(page_3);
+        boxBinarySVF->setObjectName(QStringLiteral("boxBinarySVF"));
+        boxBinarySVF->setEnabled(true);
+        sizePolicy3.setHeightForWidth(boxBinarySVF->sizePolicy().hasHeightForWidth());
+        boxBinarySVF->setSizePolicy(sizePolicy3);
+        boxBinarySVF->setCheckable(true);
+        boxBinarySVF->setChecked(false);
+        gridLayout_5 = new QGridLayout(boxBinarySVF);
+        gridLayout_5->setSpacing(6);
+        gridLayout_5->setContentsMargins(11, 11, 11, 11);
+        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
+        label_17 = new QLabel(boxBinarySVF);
+        label_17->setObjectName(QStringLiteral("label_17"));
+
+        gridLayout_5->addWidget(label_17, 0, 0, 1, 1);
+
+        edtBinaryD = new QSpinBox(boxBinarySVF);
+        edtBinaryD->setObjectName(QStringLiteral("edtBinaryD"));
+        edtBinaryD->setMinimum(0);
+        edtBinaryD->setMaximum(100);
+
+        gridLayout_5->addWidget(edtBinaryD, 0, 1, 1, 1);
+
+
+        gridLayout_2->addWidget(boxBinarySVF, 2, 0, 1, 1);
+
+        boxBinaryHSV = new QGroupBox(page_3);
+        boxBinaryHSV->setObjectName(QStringLiteral("boxBinaryHSV"));
+        boxBinaryHSV->setEnabled(true);
+        sizePolicy3.setHeightForWidth(boxBinaryHSV->sizePolicy().hasHeightForWidth());
+        boxBinaryHSV->setSizePolicy(sizePolicy3);
+        boxBinaryHSV->setCheckable(true);
+        boxBinaryHSV->setChecked(true);
+        gridLayout_3 = new QGridLayout(boxBinaryHSV);
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setContentsMargins(11, 11, 11, 11);
+        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_3->setContentsMargins(-1, -1, -1, 11);
+        label_7 = new QLabel(boxBinaryHSV);
+        label_7->setObjectName(QStringLiteral("label_7"));
+        sizePolicy4.setHeightForWidth(label_7->sizePolicy().hasHeightForWidth());
+        label_7->setSizePolicy(sizePolicy4);
+
+        gridLayout_3->addWidget(label_7, 0, 0, 1, 1);
+
+        edtBinaryHmin = new QSpinBox(boxBinaryHSV);
+        edtBinaryHmin->setObjectName(QStringLiteral("edtBinaryHmin"));
+        edtBinaryHmin->setMinimum(-360);
+        edtBinaryHmin->setMaximum(360);
+
+        gridLayout_3->addWidget(edtBinaryHmin, 0, 1, 1, 1);
+
+        label_10 = new QLabel(boxBinaryHSV);
+        label_10->setObjectName(QStringLiteral("label_10"));
+
+        gridLayout_3->addWidget(label_10, 1, 0, 1, 1);
+
+        edtBinarySmin = new QSpinBox(boxBinaryHSV);
+        edtBinarySmin->setObjectName(QStringLiteral("edtBinarySmin"));
+        edtBinarySmin->setMinimum(0);
+        edtBinarySmin->setMaximum(255);
+
+        gridLayout_3->addWidget(edtBinarySmin, 1, 1, 1, 1);
+
+        label_9 = new QLabel(boxBinaryHSV);
+        label_9->setObjectName(QStringLiteral("label_9"));
+
+        gridLayout_3->addWidget(label_9, 1, 2, 1, 2);
+
+        edtBinaryVmin = new QSpinBox(boxBinaryHSV);
+        edtBinaryVmin->setObjectName(QStringLiteral("edtBinaryVmin"));
+        edtBinaryVmin->setMinimum(0);
+        edtBinaryVmin->setMaximum(255);
+
+        gridLayout_3->addWidget(edtBinaryVmin, 1, 4, 1, 1);
+
+        edtBinaryHmax = new QSpinBox(boxBinaryHSV);
+        edtBinaryHmax->setObjectName(QStringLiteral("edtBinaryHmax"));
+        edtBinaryHmax->setMinimum(0);
+        edtBinaryHmax->setMaximum(360);
+
+        gridLayout_3->addWidget(edtBinaryHmax, 0, 4, 1, 1);
+
+        label_8 = new QLabel(boxBinaryHSV);
+        label_8->setObjectName(QStringLiteral("label_8"));
+        sizePolicy2.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
+        label_8->setSizePolicy(sizePolicy2);
+        label_8->setAlignment(Qt::AlignCenter);
+
+        gridLayout_3->addWidget(label_8, 0, 2, 1, 2);
+
+
+        gridLayout_2->addWidget(boxBinaryHSV, 0, 0, 1, 1);
+
+        groupBox = new QGroupBox(page_3);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        groupBox->setCheckable(true);
+
+        gridLayout_2->addWidget(groupBox, 3, 0, 1, 1);
+
+        toolBox->addItem(page_3, QString::fromUtf8("\344\272\214\345\200\274\345\214\226"));
         page_2 = new QWidget();
         page_2->setObjectName(QStringLiteral("page_2"));
-        page_2->setGeometry(QRect(0, 0, 248, 414));
+        page_2->setGeometry(QRect(0, 0, 248, 553));
         toolBox->addItem(page_2, QStringLiteral("Page 2"));
 
         verticalLayout->addWidget(toolBox);
@@ -411,7 +613,7 @@ public:
         MainWinClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWinClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 443, 26));
+        menuBar->setGeometry(QRect(0, 0, 688, 26));
         mainMenu = new QMenu(menuBar);
         mainMenu->setObjectName(QStringLiteral("mainMenu"));
         mainMenu->setFont(font);
@@ -435,9 +637,8 @@ public:
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
-        QObject::connect(boxGrayscale, SIGNAL(toggled(bool)), checkHistogram, SLOT(setEnabled(bool)));
 
-        toolBox->setCurrentIndex(0);
+        toolBox->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWinClass);
@@ -455,6 +656,8 @@ public:
         btnPrevious->setText(QApplication::translate("MainWinClass", "\344\270\212\344\270\200\345\270\247", 0));
         btnNext->setText(QApplication::translate("MainWinClass", "\344\270\213\344\270\200\345\270\247", 0));
         label->setText(QApplication::translate("MainWinClass", "TextLabel", 0));
+        radioTypeLimit->setText(QApplication::translate("MainWinClass", "\351\231\220\351\200\237\346\240\207\345\277\227", 0));
+        radioTypeWarning->setText(QApplication::translate("MainWinClass", "\350\255\246\345\221\212\346\240\207\345\277\227", 0));
         boxDetectArea->setTitle(QApplication::translate("MainWinClass", "\346\243\200\346\265\213\345\214\272\345\237\237", 0));
         label_2->setText(QApplication::translate("MainWinClass", "\351\241\266\351\203\250\346\243\200\346\265\213\345\214\272\345\237\237\357\274\232", 0));
         label_3->setText(QApplication::translate("MainWinClass", "\344\276\247\350\276\271\346\243\200\346\265\213\345\214\272\345\237\237\357\274\232", 0));
@@ -470,14 +673,23 @@ public:
         boxEnhance->setTitle(QApplication::translate("MainWinClass", "\345\233\276\345\203\217\345\242\236\345\274\272", 0));
         label_6->setText(QApplication::translate("MainWinClass", "\351\245\261\345\222\214\345\272\246\357\274\232", 0));
         checkHistogram->setText(QApplication::translate("MainWinClass", "\347\233\264\346\226\271\345\233\276\345\235\207\350\241\241\345\214\226", 0));
-        boxGrayscale->setTitle(QApplication::translate("MainWinClass", "\347\201\260\345\272\246\345\233\276\346\217\220\345\217\226", 0));
-        radioButton->setText(QApplication::translate("MainWinClass", "\347\201\260\345\272\246\345\200\274", 0));
-        radioButton_2->setText(QApplication::translate("MainWinClass", "\350\211\262\350\260\203\345\210\206\351\207\217", 0));
-        radioButton_3->setText(QApplication::translate("MainWinClass", "R\345\210\206\351\207\217", 0));
-        radioButton_4->setText(QApplication::translate("MainWinClass", "G\345\210\206\351\207\217", 0));
-        radioButton_5->setText(QApplication::translate("MainWinClass", "B\345\210\206\351\207\217", 0));
-        toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206\350\256\276\347\275\256", 0));
-        toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\351\241\265", 0));
+        toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206", 0));
+        boxBinaryRGB->setTitle(QApplication::translate("MainWinClass", "RGB", 0));
+        label_12->setText(QApplication::translate("MainWinClass", "R\357\274\232", 0));
+        label_11->setText(QApplication::translate("MainWinClass", "~", 0));
+        label_14->setText(QApplication::translate("MainWinClass", "G\357\274\232", 0));
+        label_13->setText(QApplication::translate("MainWinClass", "~", 0));
+        label_16->setText(QApplication::translate("MainWinClass", "B\357\274\232", 0));
+        label_15->setText(QApplication::translate("MainWinClass", "~", 0));
+        boxBinarySVF->setTitle(QApplication::translate("MainWinClass", "SVF", 0));
+        label_17->setText(QApplication::translate("MainWinClass", "D\357\274\232", 0));
+        boxBinaryHSV->setTitle(QApplication::translate("MainWinClass", "HSV", 0));
+        label_7->setText(QApplication::translate("MainWinClass", "H\357\274\232", 0));
+        label_10->setText(QApplication::translate("MainWinClass", "S > ", 0));
+        label_9->setText(QApplication::translate("MainWinClass", "V > ", 0));
+        label_8->setText(QApplication::translate("MainWinClass", "~", 0));
+        groupBox->setTitle(QApplication::translate("MainWinClass", "\351\231\204\345\212\240\345\244\204\347\220\206", 0));
+        toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\344\272\214\345\200\274\345\214\226", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
         menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));

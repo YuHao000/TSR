@@ -37,8 +37,8 @@ void TSR::run() {
 			startTime = getTickCount();
 			GetROIImage();
 			SaturationEnhance();
-			ExtractGrayscale();
-			HistogramEqualize();
+			Binary();
+			//HistogramEqualize();
 			OutputROIImage();
 			endTime = getTickCount();
 
@@ -63,10 +63,6 @@ void TSR::run() {
 
 }
 
-void TSR::A(int k) {
-	medianBlur(img, img, k);
-}
-
 // 裁剪输入图像，为了处理方便，没有严格使用输入ROI
 // 实际处理的图像范围会大于指定范围
 void TSR::GetROIImage() {
@@ -75,7 +71,7 @@ void TSR::GetROIImage() {
 }
 
 // 生成输出ROI图像
-// 将多处理那一块区域填充为灰色
+// 将多处理那一块区域填充为黑色
 void TSR::OutputROIImage() {
 	if (!currentState.DetectAreaEnabled)
 		return;
@@ -91,7 +87,7 @@ void TSR::OutputROIImage() {
 	for (int i = img.rows / ROIBottom * ROITop; i < img.rows; i++) {
 		uchar * data = img.ptr<uchar>(i);
 		for (int j = img.cols * ROISide / 2 * img.channels(); j < cols; j++) {
-			data[j] = 155;
+			data[j] = 0;
 		}
 	}
 }
@@ -125,47 +121,52 @@ void TSR::HistogramEqualize() {
 		equalizeHist(img, img);
 }
 
-// 提取灰度图
-void TSR::ExtractGrayscale() {
-	if (!currentState.GrayscaleEnabled)
-		return;
-
+// 二值化
+void TSR::Binary() {
 	vector<Mat> channels;
-	switch (currentState.GrayscaleMethed)
+
+	switch (currentState.BinaryMethod)
 	{
-	// 灰度值
+	// HSV
 	case 0:
-		cvtColor(img, img, CV_BGR2GRAY);
+		cvtColor(img, img, CV_BGR2HSV);
+		split(img, channels);
+		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
+		for (int i = 0; i < img.rows; i++) {
+			uchar * H = channels[0].ptr<uchar>(i);
+			uchar * S = channels[1].ptr<uchar>(i);
+			uchar * V = channels[2].ptr<uchar>(i);
+			uchar * data = img.ptr<uchar>(i);
+			for (int j = 0; j < img.cols; j++) {
+				if (currentState.BinaryHmin < 0) {
+					if (H[j] > currentState.BinaryHmax / 2 && H[j] < (currentState.BinaryHmin + 360) / 2)
+						continue;
+				}
+				else if (H[j] < currentState.BinaryHmin / 2 || H[j] > currentState.BinaryHmax / 2) {
+					continue;
+				}
+
+				if (S[j] < currentState.BinarySmin)
+					continue;
+
+				if (V[j] < currentState.BinaryVmin)
+					continue;
+
+				data[j] = 255;
+			}
+		}
 		break;
 
-	// Hue分量
+	// RGB
 	case 1:
-		cvtColor(img, img, CV_BGR2HSV);	
-		split(img, channels);
-		img = channels[0];
+		
 		break;
 
-	// R component
+	// SVF
 	case 2:
-		split(img, channels);
-		img = channels[2];
 		break;
-
-	// G component
-	case 3:
-		split(img, channels);
-		img = channels[1];
-		break;
-
-	// B component
-	case 4:
-		split(img, channels);
-		img = channels[0];
-		break;
-
 
 	default:
 		break;
 	}
-
 }

@@ -21,11 +21,11 @@ typedef struct {
 	int Saturation;
 	bool Histogram;
 
-	// 灰度图提取设置
-	bool GrayscaleEnabled;
-	int GrayscaleMethed;
-
-	int k;
+	// 二值化设置
+	int BinaryMethod;
+	int BinaryHmin, BinaryHmax, BinarySmin, BinaryVmin;
+	int BinaryRmin, BinaryRmax, BinaryGmin, BinaryGmax, BinaryBmin, BinaryBmax;
+	int BinaryD;
 }TSRParam_t;
 
 typedef struct {
@@ -56,12 +56,11 @@ private:
 	int64 endTime;
 	cv::Mat img;
 
-	void A(int k);
 	void GetROIImage();
 	void OutputROIImage();
 	void SaturationEnhance();
 	void HistogramEqualize();
-	void ExtractGrayscale();
+	void Binary();
 };
 
 #endif

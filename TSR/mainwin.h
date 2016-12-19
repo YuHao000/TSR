@@ -32,12 +32,14 @@ private:
 	cv::Mat ImgDisplay;
 
 	// Widget groups
-	std::vector<QRadioButton *> GrayscaleRadios;
+	std::vector<QGroupBox *> Binaryboxs;
 
 	std::string UTF8ToGBK(const char* strUTF8);
 	void GetSettings();
-	int GetGrayscaleMethod();
-	void SetGaryscaleMethod(int val);
+	int GetRadioMethod(std::vector<QRadioButton *> radios);
+	void SetRadioMethod(std::vector<QRadioButton *> radios, int val);
+	int GetBoxMethod(std::vector<QGroupBox *> boxs);
+	void SetBoxMethod(std::vector<QGroupBox *> boxs, int val);
 
 private slots:
 	void OpenNewImg();
