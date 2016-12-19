@@ -34,13 +34,14 @@ void TSR::run() {
 			break;
 
 		case TSRParam.Step1:
-			startTime = getTickCount();
+			
 			GetROIImage();
 			SaturationEnhance();
+			startTime = getTickCount();
 			Binary();
-			//HistogramEqualize();
-			OutputROIImage();
 			endTime = getTickCount();
+			//HistogramEqualize();
+			OutputROIImage();	
 
 			TSRResultLock.lock();
 			TSRResult.ElapseTime = 1000.0*(endTime - startTime) / getTickFrequency();
@@ -124,6 +125,8 @@ void TSR::HistogramEqualize() {
 // 二值化
 void TSR::Binary() {
 	vector<Mat> channels;
+	Mat hsvimg(img.rows, img.cols, CV_8UC3);
+	vector<Mat> hsvchannels;
 
 	switch (currentState.BinaryMethod)
 	{
@@ -159,11 +162,74 @@ void TSR::Binary() {
 
 	// RGB
 	case 1:
-		
+		split(img, channels);
+		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
+		for (int i = 0; i < img.rows; i++) {
+			uchar * B = channels[0].ptr<uchar>(i);
+			uchar * G = channels[1].ptr<uchar>(i);
+			uchar * R = channels[2].ptr<uchar>(i);
+			uchar * data = img.ptr<uchar>(i);
+			
+			for (int j = 0; j < img.cols; j++) {
+				if (currentState.SignType == 0) {
+					if (R[j] - B[j] > currentState.BinaryRed && R[j] - G[j] > currentState.BinaryRed)
+						data[j] = 255;
+				}
+				else if (currentState.SignType == 1) {
+					if (R[j] - B[j] > currentState.BinaryYellow && G[j] - B[j] > currentState.BinaryYellow)
+						data[j] = 255;
+				}
+			}
+		}
 		break;
 
 	// SVF
 	case 2:
+		split(img, channels);
+		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
+		for (int i = 0; i < img.rows; i++) {
+			uchar * B = channels[0].ptr<uchar>(i);
+			uchar * G = channels[1].ptr<uchar>(i);
+			uchar * R = channels[2].ptr<uchar>(i);
+			uchar * data = img.ptr<uchar>(i);
+			for (int j = 0; j < img.cols; j++) {
+				int tmp = abs(R[j] - G[j]) + abs(G[j] - B[j]) + abs(B[j] - R[j]);
+				if (tmp >= 3 * currentState.BinaryD)
+					data[j] = 255;
+			}
+		}
+		break;
+
+	// Mixed Method
+	case 3:
+		cvtColor(img, hsvimg, CV_BGR2HSV);
+		split(img, channels);
+		split(hsvimg, hsvchannels);
+		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
+		for (int i = 0; i < img.rows; i++) {
+			uchar * B = channels[0].ptr<uchar>(i);
+			uchar * G = channels[1].ptr<uchar>(i);
+			uchar * R = channels[2].ptr<uchar>(i);
+			uchar * H = hsvchannels[0].ptr<uchar>(i);
+			uchar * data = img.ptr<uchar>(i);
+			for (int j = 0; j < img.cols; j++) {
+				int tmp;
+				if (B[j] < G[j])
+					tmp = R[j] - B[j];
+				else
+					tmp = R[j] - G[j];
+				if (tmp >= 1.5 * currentState.BinaryD) {
+					if (currentState.BinaryHmin < 0) {
+						if (H[j] > currentState.BinaryHmax / 2 && H[j] < (currentState.BinaryHmin + 360) / 2)
+							continue;
+					}
+					else if (H[j] < currentState.BinaryHmin / 2 || H[j] > currentState.BinaryHmax / 2) {
+						continue;
+					}
+					data[j] = 255;
+				}
+			}
+		}
 		break;
 
 	default:

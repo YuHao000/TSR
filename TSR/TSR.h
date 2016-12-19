@@ -11,6 +11,9 @@
 typedef struct {
 	enum {Idle, ReadImg, Step1, Step2, Step3} ProcessStep;
 
+	// 类型
+	int SignType;
+
 	// 检测区域设置
 	bool DetectAreaEnabled;
 	double DetectArea[3];
@@ -24,7 +27,7 @@ typedef struct {
 	// 二值化设置
 	int BinaryMethod;
 	int BinaryHmin, BinaryHmax, BinarySmin, BinaryVmin;
-	int BinaryRmin, BinaryRmax, BinaryGmin, BinaryGmax, BinaryBmin, BinaryBmax;
+	int BinaryRed, BinaryYellow;
 	int BinaryD;
 }TSRParam_t;
 

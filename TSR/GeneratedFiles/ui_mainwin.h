@@ -84,17 +84,9 @@ public:
     QGroupBox *boxBinaryRGB;
     QGridLayout *gridLayout_4;
     QLabel *label_12;
-    QSpinBox *edtBinaryRmin;
-    QLabel *label_11;
-    QSpinBox *edtBinaryRmax;
+    QSpinBox *edtBinaryRed;
     QLabel *label_14;
-    QSpinBox *edtBinaryGmin;
-    QLabel *label_13;
-    QSpinBox *edtBinaryGmax;
-    QLabel *label_16;
-    QSpinBox *edtBinaryBmin;
-    QLabel *label_15;
-    QSpinBox *edtBinaryBmax;
+    QSpinBox *edtBinaryYellow;
     QWidget *widget_2;
     QGroupBox *boxBinarySVF;
     QGridLayout *gridLayout_5;
@@ -110,7 +102,13 @@ public:
     QSpinBox *edtBinaryVmin;
     QSpinBox *edtBinaryHmax;
     QLabel *label_8;
-    QGroupBox *groupBox;
+    QGroupBox *boxBianryPost;
+    QGridLayout *gridLayout_6;
+    QLabel *label_13;
+    QSpinBox *edtBinaryDilate;
+    QLabel *label_11;
+    QSpinBox *edtBinaryErode;
+    QGroupBox *boxBinaryMixed;
     QWidget *page_2;
     QMenuBar *menuBar;
     QMenu *mainMenu;
@@ -411,27 +409,12 @@ public:
 
         gridLayout_4->addWidget(label_12, 0, 0, 1, 1);
 
-        edtBinaryRmin = new QSpinBox(boxBinaryRGB);
-        edtBinaryRmin->setObjectName(QStringLiteral("edtBinaryRmin"));
-        edtBinaryRmin->setMinimum(0);
-        edtBinaryRmin->setMaximum(255);
+        edtBinaryRed = new QSpinBox(boxBinaryRGB);
+        edtBinaryRed->setObjectName(QStringLiteral("edtBinaryRed"));
+        edtBinaryRed->setMinimum(0);
+        edtBinaryRed->setMaximum(255);
 
-        gridLayout_4->addWidget(edtBinaryRmin, 0, 1, 1, 1);
-
-        label_11 = new QLabel(boxBinaryRGB);
-        label_11->setObjectName(QStringLiteral("label_11"));
-        sizePolicy2.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
-        label_11->setSizePolicy(sizePolicy2);
-        label_11->setAlignment(Qt::AlignCenter);
-
-        gridLayout_4->addWidget(label_11, 0, 2, 1, 1);
-
-        edtBinaryRmax = new QSpinBox(boxBinaryRGB);
-        edtBinaryRmax->setObjectName(QStringLiteral("edtBinaryRmax"));
-        edtBinaryRmax->setMinimum(0);
-        edtBinaryRmax->setMaximum(255);
-
-        gridLayout_4->addWidget(edtBinaryRmax, 0, 3, 1, 1);
+        gridLayout_4->addWidget(edtBinaryRed, 0, 1, 1, 1);
 
         label_14 = new QLabel(boxBinaryRGB);
         label_14->setObjectName(QStringLiteral("label_14"));
@@ -440,56 +423,12 @@ public:
 
         gridLayout_4->addWidget(label_14, 1, 0, 1, 1);
 
-        edtBinaryGmin = new QSpinBox(boxBinaryRGB);
-        edtBinaryGmin->setObjectName(QStringLiteral("edtBinaryGmin"));
-        edtBinaryGmin->setMinimum(0);
-        edtBinaryGmin->setMaximum(255);
+        edtBinaryYellow = new QSpinBox(boxBinaryRGB);
+        edtBinaryYellow->setObjectName(QStringLiteral("edtBinaryYellow"));
+        edtBinaryYellow->setMinimum(0);
+        edtBinaryYellow->setMaximum(255);
 
-        gridLayout_4->addWidget(edtBinaryGmin, 1, 1, 1, 1);
-
-        label_13 = new QLabel(boxBinaryRGB);
-        label_13->setObjectName(QStringLiteral("label_13"));
-        sizePolicy2.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
-        label_13->setSizePolicy(sizePolicy2);
-        label_13->setAlignment(Qt::AlignCenter);
-
-        gridLayout_4->addWidget(label_13, 1, 2, 1, 1);
-
-        edtBinaryGmax = new QSpinBox(boxBinaryRGB);
-        edtBinaryGmax->setObjectName(QStringLiteral("edtBinaryGmax"));
-        edtBinaryGmax->setMinimum(0);
-        edtBinaryGmax->setMaximum(255);
-
-        gridLayout_4->addWidget(edtBinaryGmax, 1, 3, 1, 1);
-
-        label_16 = new QLabel(boxBinaryRGB);
-        label_16->setObjectName(QStringLiteral("label_16"));
-        sizePolicy4.setHeightForWidth(label_16->sizePolicy().hasHeightForWidth());
-        label_16->setSizePolicy(sizePolicy4);
-
-        gridLayout_4->addWidget(label_16, 2, 0, 1, 1);
-
-        edtBinaryBmin = new QSpinBox(boxBinaryRGB);
-        edtBinaryBmin->setObjectName(QStringLiteral("edtBinaryBmin"));
-        edtBinaryBmin->setMinimum(0);
-        edtBinaryBmin->setMaximum(255);
-
-        gridLayout_4->addWidget(edtBinaryBmin, 2, 1, 1, 1);
-
-        label_15 = new QLabel(boxBinaryRGB);
-        label_15->setObjectName(QStringLiteral("label_15"));
-        sizePolicy2.setHeightForWidth(label_15->sizePolicy().hasHeightForWidth());
-        label_15->setSizePolicy(sizePolicy2);
-        label_15->setAlignment(Qt::AlignCenter);
-
-        gridLayout_4->addWidget(label_15, 2, 2, 1, 1);
-
-        edtBinaryBmax = new QSpinBox(boxBinaryRGB);
-        edtBinaryBmax->setObjectName(QStringLiteral("edtBinaryBmax"));
-        edtBinaryBmax->setMinimum(0);
-        edtBinaryBmax->setMaximum(255);
-
-        gridLayout_4->addWidget(edtBinaryBmax, 2, 3, 1, 1);
+        gridLayout_4->addWidget(edtBinaryYellow, 1, 1, 1, 1);
 
 
         gridLayout_2->addWidget(boxBinaryRGB, 1, 0, 1, 1);
@@ -497,7 +436,7 @@ public:
         widget_2 = new QWidget(page_3);
         widget_2->setObjectName(QStringLiteral("widget_2"));
 
-        gridLayout_2->addWidget(widget_2, 4, 0, 1, 1);
+        gridLayout_2->addWidget(widget_2, 5, 0, 1, 1);
 
         boxBinarySVF = new QGroupBox(page_3);
         boxBinarySVF->setObjectName(QStringLiteral("boxBinarySVF"));
@@ -593,11 +532,56 @@ public:
 
         gridLayout_2->addWidget(boxBinaryHSV, 0, 0, 1, 1);
 
-        groupBox = new QGroupBox(page_3);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setCheckable(true);
+        boxBianryPost = new QGroupBox(page_3);
+        boxBianryPost->setObjectName(QStringLiteral("boxBianryPost"));
+        sizePolicy3.setHeightForWidth(boxBianryPost->sizePolicy().hasHeightForWidth());
+        boxBianryPost->setSizePolicy(sizePolicy3);
+        boxBianryPost->setCheckable(true);
+        gridLayout_6 = new QGridLayout(boxBianryPost);
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setContentsMargins(11, 11, 11, 11);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        label_13 = new QLabel(boxBianryPost);
+        label_13->setObjectName(QStringLiteral("label_13"));
+        sizePolicy4.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
+        label_13->setSizePolicy(sizePolicy4);
 
-        gridLayout_2->addWidget(groupBox, 3, 0, 1, 1);
+        gridLayout_6->addWidget(label_13, 0, 0, 1, 1);
+
+        edtBinaryDilate = new QSpinBox(boxBianryPost);
+        edtBinaryDilate->setObjectName(QStringLiteral("edtBinaryDilate"));
+        edtBinaryDilate->setMinimum(0);
+        edtBinaryDilate->setMaximum(99);
+        edtBinaryDilate->setValue(0);
+
+        gridLayout_6->addWidget(edtBinaryDilate, 0, 1, 1, 1);
+
+        label_11 = new QLabel(boxBianryPost);
+        label_11->setObjectName(QStringLiteral("label_11"));
+        sizePolicy2.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
+        label_11->setSizePolicy(sizePolicy2);
+        label_11->setAlignment(Qt::AlignCenter);
+
+        gridLayout_6->addWidget(label_11, 0, 2, 1, 1);
+
+        edtBinaryErode = new QSpinBox(boxBianryPost);
+        edtBinaryErode->setObjectName(QStringLiteral("edtBinaryErode"));
+        edtBinaryErode->setMinimum(0);
+        edtBinaryErode->setMaximum(99);
+        edtBinaryErode->setValue(0);
+
+        gridLayout_6->addWidget(edtBinaryErode, 0, 3, 1, 1);
+
+
+        gridLayout_2->addWidget(boxBianryPost, 4, 0, 1, 1);
+
+        boxBinaryMixed = new QGroupBox(page_3);
+        boxBinaryMixed->setObjectName(QStringLiteral("boxBinaryMixed"));
+        sizePolicy3.setHeightForWidth(boxBinaryMixed->sizePolicy().hasHeightForWidth());
+        boxBinaryMixed->setSizePolicy(sizePolicy3);
+        boxBinaryMixed->setCheckable(true);
+
+        gridLayout_2->addWidget(boxBinaryMixed, 3, 0, 1, 1);
 
         toolBox->addItem(page_3, QString::fromUtf8("\344\272\214\345\200\274\345\214\226"));
         page_2 = new QWidget();
@@ -675,12 +659,8 @@ public:
         checkHistogram->setText(QApplication::translate("MainWinClass", "\347\233\264\346\226\271\345\233\276\345\235\207\350\241\241\345\214\226", 0));
         toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWinClass", "\345\233\276\345\203\217\351\242\204\345\244\204\347\220\206", 0));
         boxBinaryRGB->setTitle(QApplication::translate("MainWinClass", "RGB", 0));
-        label_12->setText(QApplication::translate("MainWinClass", "R\357\274\232", 0));
-        label_11->setText(QApplication::translate("MainWinClass", "~", 0));
-        label_14->setText(QApplication::translate("MainWinClass", "G\357\274\232", 0));
-        label_13->setText(QApplication::translate("MainWinClass", "~", 0));
-        label_16->setText(QApplication::translate("MainWinClass", "B\357\274\232", 0));
-        label_15->setText(QApplication::translate("MainWinClass", "~", 0));
+        label_12->setText(QApplication::translate("MainWinClass", "Red\357\274\232", 0));
+        label_14->setText(QApplication::translate("MainWinClass", "Yellow\357\274\232", 0));
         boxBinarySVF->setTitle(QApplication::translate("MainWinClass", "SVF", 0));
         label_17->setText(QApplication::translate("MainWinClass", "D\357\274\232", 0));
         boxBinaryHSV->setTitle(QApplication::translate("MainWinClass", "HSV", 0));
@@ -688,7 +668,10 @@ public:
         label_10->setText(QApplication::translate("MainWinClass", "S > ", 0));
         label_9->setText(QApplication::translate("MainWinClass", "V > ", 0));
         label_8->setText(QApplication::translate("MainWinClass", "~", 0));
-        groupBox->setTitle(QApplication::translate("MainWinClass", "\351\231\204\345\212\240\345\244\204\347\220\206", 0));
+        boxBianryPost->setTitle(QApplication::translate("MainWinClass", "\351\231\204\345\212\240\345\244\204\347\220\206", 0));
+        label_13->setText(QApplication::translate("MainWinClass", "\350\206\250\350\203\200\357\274\232", 0));
+        label_11->setText(QApplication::translate("MainWinClass", "\350\205\220\350\232\200\357\274\232", 0));
+        boxBinaryMixed->setTitle(QApplication::translate("MainWinClass", "Mixed Method", 0));
         toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\344\272\214\345\200\274\345\214\226", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));

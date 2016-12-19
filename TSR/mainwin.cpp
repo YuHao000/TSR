@@ -24,6 +24,7 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	Binaryboxs.push_back(ui.boxBinaryHSV);
 	Binaryboxs.push_back(ui.boxBinaryRGB);
 	Binaryboxs.push_back(ui.boxBinarySVF);
+	Binaryboxs.push_back(ui.boxBinaryMixed);
 
 	GetSettings();
 	myTSR.start();
@@ -110,6 +111,11 @@ void MainWin::SendImage() {
 
 	TSRParamLock.lock();
 
+	if (ui.radioTypeLimit->isChecked())
+		TSRParam.SignType = 0;
+	else
+		TSRParam.SignType = 1;
+
 	TSRParam.DetectAreaEnabled = ui.boxDetectArea->isChecked();
 	TSRParam.DetectArea[0] = ui.edtDetectTop->value();
 	TSRParam.DetectArea[1] = ui.edtDetectBottom->value();
@@ -125,12 +131,8 @@ void MainWin::SendImage() {
 	TSRParam.BinaryHmax = ui.edtBinaryHmax->value();
 	TSRParam.BinarySmin = ui.edtBinarySmin->value();
 	TSRParam.BinaryVmin = ui.edtBinaryVmin->value();
-	TSRParam.BinaryRmin = ui.edtBinaryRmin->value();
-	TSRParam.BinaryRmax = ui.edtBinaryRmax->value();
-	TSRParam.BinaryGmin = ui.edtBinaryGmin->value();
-	TSRParam.BinaryGmax = ui.edtBinaryGmax->value();
-	TSRParam.BinaryBmin = ui.edtBinaryBmin->value();
-	TSRParam.BinaryBmax = ui.edtBinaryBmax->value();
+	TSRParam.BinaryRed = ui.edtBinaryRed->value();
+	TSRParam.BinaryYellow = ui.edtBinaryYellow->value();
 	TSRParam.BinaryD = ui.edtBinaryD->value();
 
 	TSRParam.ProcessStep = TSRParam.ReadImg;
@@ -244,6 +246,9 @@ void MainWin::GetSettings() {
 	resize(mySetting.value("WinSize", QSize(1024, 768)).toSize());
 	move(mySetting.value("WinPos", QPoint(0, 0)).toPoint());
 
+	// Sign type
+	ui.radioTypeWarning->setChecked(mySetting.value("SignType", false).toBool());
+
 	// Detect Area
 	ui.boxDetectArea->setChecked(mySetting.value("DetectAreaEnabled", false).toBool());
 	ui.edtDetectTop->setValue(mySetting.value("DetectTop", 0.00).toDouble());
@@ -262,12 +267,8 @@ void MainWin::GetSettings() {
 	ui.edtBinaryHmax->setValue(mySetting.value("BinaryHmax", 0).toInt());
 	ui.edtBinarySmin->setValue(mySetting.value("BinarySmin", 0).toInt());
 	ui.edtBinaryVmin->setValue(mySetting.value("BinaryVmin", 0).toInt());
-	ui.edtBinaryRmin->setValue(mySetting.value("BinaryRmin", 0).toInt());
-	ui.edtBinaryRmax->setValue(mySetting.value("BinaryRmax", 0).toInt());
-	ui.edtBinaryGmin->setValue(mySetting.value("BinaryGmin", 0).toInt());
-	ui.edtBinaryGmax->setValue(mySetting.value("BinaryGmax", 0).toInt());
-	ui.edtBinaryBmin->setValue(mySetting.value("BinaryBmin", 0).toInt());
-	ui.edtBinaryBmax->setValue(mySetting.value("BinaryBmax", 0).toInt());
+	ui.edtBinaryRed->setValue(mySetting.value("BinaryRed", 0).toInt());
+	ui.edtBinaryYellow->setValue(mySetting.value("BinaryYellow", 0).toInt());
 	ui.edtBinaryD->setValue(mySetting.value("BinaryD", 0).toInt());
 }
 
@@ -281,6 +282,9 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	// Window
 	mySetting.setValue("WinSize", size());
 	mySetting.setValue("WinPos", pos());
+
+	// Sign type
+	mySetting.setValue("SignType", ui.radioTypeWarning->isChecked());
 
 	// Detect Area
 	mySetting.setValue("DetectAreaEnabled", ui.boxDetectArea->isChecked());
@@ -300,13 +304,10 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("BinaryHmax", ui.edtBinaryHmax->value());
 	mySetting.setValue("BinarySmin", ui.edtBinarySmin->value());
 	mySetting.setValue("BinaryVmin", ui.edtBinaryVmin->value());
-	mySetting.setValue("BinaryRmin", ui.edtBinaryRmin->value());
-	mySetting.setValue("BinaryRmax", ui.edtBinaryRmax->value());
-	mySetting.setValue("BinaryGmin", ui.edtBinaryGmin->value());
-	mySetting.setValue("BinaryGmax", ui.edtBinaryGmax->value());
-	mySetting.setValue("BinaryBmin", ui.edtBinaryBmin->value());
-	mySetting.setValue("BinaryBmax", ui.edtBinaryBmax->value());
+	mySetting.setValue("BinaryRed", ui.edtBinaryRed->value());
+	mySetting.setValue("BinaryYellow", ui.edtBinaryYellow->value());
 	mySetting.setValue("BinaryD", ui.edtBinaryD->value());
+	mySetting.setValue("BinaryPost", ui.boxBianryPost->isChecked());
 }
 
 // 读取单选按钮组的设置
