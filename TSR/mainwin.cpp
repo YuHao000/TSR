@@ -21,10 +21,12 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
 	ui.mainToolBar->addAction(ui.actionResend);
 
+	ui.toolBox->setCurrentIndex(1);
 	Binaryboxs.push_back(ui.boxBinaryHSV);
 	Binaryboxs.push_back(ui.boxBinaryRGB);
 	Binaryboxs.push_back(ui.boxBinarySVF);
 	Binaryboxs.push_back(ui.boxBinaryMixed);
+	ui.toolBox->setCurrentIndex(0);
 
 	GetSettings();
 	myTSR.start();
@@ -134,6 +136,13 @@ void MainWin::SendImage() {
 	TSRParam.BinaryRed = ui.edtBinaryRed->value();
 	TSRParam.BinaryYellow = ui.edtBinaryYellow->value();
 	TSRParam.BinaryD = ui.edtBinaryD->value();
+	TSRParam.BinaryPost = ui.boxBianryPost->isChecked();
+	TSRParam.BinaryDilate = ui.edtBinaryDilate->value();
+	TSRParam.BinaryErode = ui.edtBinaryErode->value();
+	
+	TSRParam.HoughEnabled = ui.boxShapeHoughCircle->isChecked();
+	TSRParam.HoughP1 = ui.edtHoughP1->value();
+	TSRParam.HoughP2 = ui.edtHoughP2->value();
 
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -146,17 +155,53 @@ void MainWin::UpdateImage() {
 	ImgOutLock.lock();
 
 	((ImageViewer *)ui.PicArea)->setPic(1, ImgOut);
+	ImgDisplay = ImgRead.clone();
 
+	ImgReadLock.unlock();
+
+	// 根据掩膜生成提取区域彩色图
 	Mat tmp(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(0,0,0));
-	ImgRead(Rect(0,0,ImgOut.cols,ImgOut.rows)).copyTo(tmp, ImgOut);
+	ImgDisplay(Rect(0,0,ImgOut.cols,ImgOut.rows)).copyTo(tmp, ImgOut);
 	((ImageViewer *)ui.PicArea)->setPic(2, tmp);
 
 	ImgOutLock.unlock();
-	ImgReadLock.unlock();
+	
+
+	// 画出检测区域
+	if (ui.boxDetectArea->isChecked()) {
+		
+		double x1 = ImgDisplay.cols * ui.edtDetectSide->value() / 2;
+		double x2 = ImgDisplay.cols - x1;
+		double y1 = ImgDisplay.rows * ui.edtDetectTop->value();
+		double y2 = ImgDisplay.rows * ui.edtDetectBottom->value();
+
+		line(ImgDisplay, Point(0, y2), Point(x1, y2), COLOR_RED, 2);
+		line(ImgDisplay, Point(x1, y2), Point(x1, y1), COLOR_RED, 4);
+		line(ImgDisplay, Point(x1, y1), Point(x2, y1), COLOR_RED, 2);
+		line(ImgDisplay, Point(x2, y1), Point(x2, y2), COLOR_RED, 4);
+		line(ImgDisplay, Point(x2, y2), Point(ImgDisplay.cols, y2), COLOR_RED, 2);
+	}
 
 	TSRResultLock.lock();
 	ui.label->setText(QString::number(TSRResult.ElapseTime));
+	vector<Vec3f> drawCircles(TSRResult.circles);
 	TSRResultLock.unlock();
+
+
+	// 画出Hough圆检测
+	if (ui.boxShapeHoughCircle->isChecked()) {
+		for (size_t i = 0; i < drawCircles.size(); i++) {
+			Point center(cvRound(drawCircles[i][0]), cvRound(drawCircles[i][1]));
+			int radius = cvRound(drawCircles[i][2]);
+
+			circle(ImgDisplay, center, 3, Scalar(255, 0, 0), -1, 8, 0);
+			circle(ImgDisplay, center, radius, Scalar(255, 0, 0), 3, 8, 0);
+		}
+	}
+
+
+
+	((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
 
 	if (capture.isOpened() && AutoPlay) {
 		NextFrame();
@@ -184,25 +229,7 @@ void MainWin::CaptureFrame(int val) {
 
 	ImgReadLock.lock();
 	capture >> ImgRead;
-	if (ui.boxDetectArea->isChecked()) {
-		ImgDisplay = ImgRead.clone();
-		double x1 = ImgDisplay.cols * ui.edtDetectSide->value() / 2;
-		double x2 = ImgDisplay.cols - x1;
-		double y1 = ImgDisplay.rows * ui.edtDetectTop->value();
-		double y2 = ImgDisplay.rows * ui.edtDetectBottom->value();
-
-		line(ImgDisplay, Point(0 , y2), Point(x1, y2), COLOR_RED, 2);
-		line(ImgDisplay, Point(x1, y2), Point(x1, y1), COLOR_RED, 4);
-		line(ImgDisplay, Point(x1, y1), Point(x2, y1), COLOR_RED, 2);
-		line(ImgDisplay, Point(x2, y1), Point(x2, y2), COLOR_RED, 4);
-		line(ImgDisplay, Point(x2, y2), Point(ImgDisplay.cols, y2), COLOR_RED, 2);
-
-		((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
-	}
-	else {
-		((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
-	}
-	
+	((ImageViewer *)ui.PicArea)->setPic(0, ImgRead);
 	ImgReadLock.unlock();
 
 	SendImage();
@@ -270,6 +297,14 @@ void MainWin::GetSettings() {
 	ui.edtBinaryRed->setValue(mySetting.value("BinaryRed", 0).toInt());
 	ui.edtBinaryYellow->setValue(mySetting.value("BinaryYellow", 0).toInt());
 	ui.edtBinaryD->setValue(mySetting.value("BinaryD", 0).toInt());
+	ui.boxBianryPost->setChecked(mySetting.value("BinaryPost", false).toBool());
+	ui.edtBinaryDilate->setValue(mySetting.value("BinaryDilate", 0).toInt());
+	ui.edtBinaryErode->setValue(mySetting.value("BinaryErode", 0).toInt());
+
+	// Hough
+	ui.boxShapeHoughCircle->setChecked(mySetting.value("HoughEnabled", false).toBool());
+	ui.edtHoughP1->setValue(mySetting.value("HoughP1", 100).toInt());
+	ui.edtHoughP2->setValue(mySetting.value("HoughP2", 100).toInt());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -308,6 +343,13 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("BinaryYellow", ui.edtBinaryYellow->value());
 	mySetting.setValue("BinaryD", ui.edtBinaryD->value());
 	mySetting.setValue("BinaryPost", ui.boxBianryPost->isChecked());
+	mySetting.setValue("BinaryDilate", ui.edtBinaryDilate->value());
+	mySetting.setValue("BinaryErode", ui.edtBinaryErode->value());
+
+	// Hough
+	mySetting.setValue("HoughEnabled", ui.boxShapeHoughCircle->isChecked());
+	mySetting.setValue("HoughP1", ui.edtHoughP1->value());
+	mySetting.setValue("HoughP2", ui.edtHoughP2->value());
 }
 
 // 读取单选按钮组的设置

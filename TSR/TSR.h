@@ -29,10 +29,18 @@ typedef struct {
 	int BinaryHmin, BinaryHmax, BinarySmin, BinaryVmin;
 	int BinaryRed, BinaryYellow;
 	int BinaryD;
+	bool BinaryPost;
+	int BinaryDilate, BinaryErode;
+
+	// Hough圆检测
+	bool HoughEnabled;
+	int HoughP1, HoughP2;
 }TSRParam_t;
 
 typedef struct {
 	double ElapseTime;
+
+	std::vector<cv::Vec3f> circles;
 }TSRResult_t;
 
 extern cv::Mat ImgRead;
@@ -61,9 +69,13 @@ private:
 
 	void GetROIImage();
 	void OutputROIImage();
+
 	void SaturationEnhance();
 	void HistogramEqualize();
+
 	void Binary();
+
+	void Hough();
 };
 
 #endif

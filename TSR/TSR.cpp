@@ -39,6 +39,7 @@ void TSR::run() {
 			SaturationEnhance();
 			startTime = getTickCount();
 			Binary();
+			Hough();
 			endTime = getTickCount();
 			//HistogramEqualize();
 			OutputROIImage();	
@@ -235,4 +236,29 @@ void TSR::Binary() {
 	default:
 		break;
 	}
+
+	// 形态学后处理
+	if (currentState.BinaryPost) {
+		Mat elementDilate = getStructuringElement(MORPH_RECT, 
+			Size(2 * currentState.BinaryDilate + 1, 2 * currentState.BinaryDilate + 1));
+		Mat elementEorde = getStructuringElement(MORPH_RECT,
+			Size(2 * currentState.BinaryErode + 1, 2 * currentState.BinaryErode + 1));
+
+		erode(img, img, elementEorde);
+		dilate(img, img, elementDilate);
+		
+	}
+}
+
+// Hough圆检测
+void TSR::Hough() {
+	if (!currentState.HoughEnabled)
+		return;
+
+	vector<Vec3f> circles;
+	HoughCircles(img, circles, HOUGH_GRADIENT, 1, 50, currentState.HoughP1, currentState.HoughP2);
+
+	TSRResultLock.lock();
+	TSRResult.circles = circles;
+	TSRResultLock.unlock();
 }

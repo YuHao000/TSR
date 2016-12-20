@@ -110,6 +110,14 @@ public:
     QSpinBox *edtBinaryErode;
     QGroupBox *boxBinaryMixed;
     QWidget *page_2;
+    QVBoxLayout *verticalLayout_3;
+    QGroupBox *boxShapeHoughCircle;
+    QGridLayout *gridLayout_7;
+    QLabel *label_15;
+    QSpinBox *edtHoughP1;
+    QLabel *label_16;
+    QSpinBox *edtHoughP2;
+    QWidget *widget_3;
     QMenuBar *menuBar;
     QMenu *mainMenu;
     QMenu *menu;
@@ -587,7 +595,52 @@ public:
         page_2 = new QWidget();
         page_2->setObjectName(QStringLiteral("page_2"));
         page_2->setGeometry(QRect(0, 0, 248, 553));
-        toolBox->addItem(page_2, QStringLiteral("Page 2"));
+        verticalLayout_3 = new QVBoxLayout(page_2);
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        boxShapeHoughCircle = new QGroupBox(page_2);
+        boxShapeHoughCircle->setObjectName(QStringLiteral("boxShapeHoughCircle"));
+        sizePolicy3.setHeightForWidth(boxShapeHoughCircle->sizePolicy().hasHeightForWidth());
+        boxShapeHoughCircle->setSizePolicy(sizePolicy3);
+        boxShapeHoughCircle->setCheckable(true);
+        gridLayout_7 = new QGridLayout(boxShapeHoughCircle);
+        gridLayout_7->setSpacing(6);
+        gridLayout_7->setContentsMargins(11, 11, 11, 11);
+        gridLayout_7->setObjectName(QStringLiteral("gridLayout_7"));
+        label_15 = new QLabel(boxShapeHoughCircle);
+        label_15->setObjectName(QStringLiteral("label_15"));
+
+        gridLayout_7->addWidget(label_15, 0, 0, 1, 1);
+
+        edtHoughP1 = new QSpinBox(boxShapeHoughCircle);
+        edtHoughP1->setObjectName(QStringLiteral("edtHoughP1"));
+        edtHoughP1->setMaximum(999);
+        edtHoughP1->setValue(0);
+
+        gridLayout_7->addWidget(edtHoughP1, 0, 1, 1, 1);
+
+        label_16 = new QLabel(boxShapeHoughCircle);
+        label_16->setObjectName(QStringLiteral("label_16"));
+
+        gridLayout_7->addWidget(label_16, 0, 2, 1, 1);
+
+        edtHoughP2 = new QSpinBox(boxShapeHoughCircle);
+        edtHoughP2->setObjectName(QStringLiteral("edtHoughP2"));
+        edtHoughP2->setMaximum(999);
+        edtHoughP2->setValue(0);
+
+        gridLayout_7->addWidget(edtHoughP2, 0, 3, 1, 1);
+
+
+        verticalLayout_3->addWidget(boxShapeHoughCircle);
+
+        widget_3 = new QWidget(page_2);
+        widget_3->setObjectName(QStringLiteral("widget_3"));
+
+        verticalLayout_3->addWidget(widget_3);
+
+        toolBox->addItem(page_2, QString::fromUtf8("\345\275\242\347\212\266\346\243\200\346\265\213\345\256\232\344\275\215"));
 
         verticalLayout->addWidget(toolBox);
 
@@ -622,7 +675,7 @@ public:
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
 
-        toolBox->setCurrentIndex(1);
+        toolBox->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MainWinClass);
@@ -673,7 +726,10 @@ public:
         label_11->setText(QApplication::translate("MainWinClass", "\350\205\220\350\232\200\357\274\232", 0));
         boxBinaryMixed->setTitle(QApplication::translate("MainWinClass", "Mixed Method", 0));
         toolBox->setItemText(toolBox->indexOf(page_3), QApplication::translate("MainWinClass", "\344\272\214\345\200\274\345\214\226", 0));
-        toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "Page 2", 0));
+        boxShapeHoughCircle->setTitle(QApplication::translate("MainWinClass", "Hough\345\234\206\346\243\200\346\265\213", 0));
+        label_15->setText(QApplication::translate("MainWinClass", "p1:", 0));
+        label_16->setText(QApplication::translate("MainWinClass", "p2:", 0));
+        toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "\345\275\242\347\212\266\346\243\200\346\265\213\345\256\232\344\275\215", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
         menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));
     } // retranslateUi
