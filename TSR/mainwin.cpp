@@ -12,6 +12,13 @@ TSR myTSR;
 Mat ImgRead;
 Mat ImgOut;
 
+// Note: 
+// 增加一个新控件有以下几个地方需要添加代码：
+// 1. closeEvent()中保存设置;
+// 2. GetSetting()中读取设置;
+// 3. TSRParam_t结构体中增加数据成员;
+// 4. SendImage()中为TSRParam赋值
+
 MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	ui.setupUi(this);
 
@@ -46,20 +53,6 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.btnNext, SIGNAL(clicked()), this, SLOT(NextFrame()));
 	connect(ui.btnPrevious, SIGNAL(clicked()), this, SLOT(PreviousFrame()));
 	connect(ui.ProgressBar, SIGNAL(valueChanged(int)), this, SLOT(CaptureFrame(int)));
-
-	//// 检测区域
-	//connect(ui.boxDetectArea, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	//connect(ui.edtDetectTop, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	//connect(ui.edtDetectBottom, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	//connect(ui.edtDetectSide, SIGNAL(valueChanged(double)), this, SLOT(SendImage()));
-	//connect(ui.comboDetectDiv, SIGNAL(currentIndexChanged(int)), this, SLOT(SendImage()));
-
-	//// 图像增强
-	//connect(ui.boxEnhance, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-	//connect(ui.sliderSatur, SIGNAL(valueChanged(int)), this, SLOT(SendImage()));
-	//connect(ui.checkHistogram, SIGNAL(toggled(bool)), this, SLOT(SendImage()));
-
-	//// 二值化
 }
 
 // Open New Image File Slot
@@ -148,6 +141,9 @@ void MainWin::SendImage() {
 	TSRParam.ShapeMethod = GetBoxMethod(Shapeboxs);
 	TSRParam.HoughP1 = ui.edtHoughP1->value();
 	TSRParam.HoughP2 = ui.edtHoughP2->value();
+	TSRParam.ShapeVariance = ui.edtShapeVariance->value();
+	TSRParam.ShapeDmin = ui.edtShapeDmin->value();
+	TSRParam.ShapeDmax = ui.edtShapeDmax->value();
 
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -321,6 +317,9 @@ void MainWin::GetSettings() {
 	SetBoxMethod(Shapeboxs, mySetting.value("ShapeMethod", 0).toInt());
 	ui.edtHoughP1->setValue(mySetting.value("HoughP1", 100).toInt());
 	ui.edtHoughP2->setValue(mySetting.value("HoughP2", 100).toInt());
+	ui.edtShapeVariance->setValue(mySetting.value("ShapeVariance", 0).toInt());
+	ui.edtShapeDmin->setValue(mySetting.value("ShapeDmin", 0).toInt());
+	ui.edtShapeDmax->setValue(mySetting.value("ShapeDmax", 0).toInt());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -366,6 +365,9 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("ShapeMethod", GetBoxMethod(Shapeboxs));
 	mySetting.setValue("HoughP1", ui.edtHoughP1->value());
 	mySetting.setValue("HoughP2", ui.edtHoughP2->value());
+	mySetting.setValue("ShapeVariance", ui.edtShapeVariance->value());
+	mySetting.setValue("ShapeDmin", ui.edtShapeDmin->value());
+	mySetting.setValue("ShapeDmax", ui.edtShapeDmax->value());
 }
 
 // 读取单选按钮组的设置

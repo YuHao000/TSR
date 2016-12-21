@@ -257,9 +257,6 @@ void TSR::Shape() {
 	vector<Point> points;
 	vector<Point> finalpoints;
 
-	int MinWidth = img.cols / 100;
-	int MaxWidth = img.cols / 7;
-
 	switch (currentState.ShapeMethod) {
 	// Hough
 	case 0:
@@ -279,7 +276,7 @@ void TSR::Shape() {
 				else if (data[j - 1] < data[j]) {
 					end = j;
 					if (start > 0) {
-						if (end - start > MinWidth && end- start < MaxWidth)
+						if (end - start > currentState.ShapeDmin && end- start < currentState.ShapeDmax)
 							points.push_back(Point(start + (end - start) / 2, i));
 					}
 				}
@@ -289,212 +286,41 @@ void TSR::Shape() {
 		if (!img.isContinuous())
 			return;
 
-		for (int k = 0; k < points.size(); k++) {
+		int dx[] = { +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1, +0, +1, +1, +2 };
+		int dy[] = { +0, +1, +1, +2, +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1 };
+		int lcoff[] = { 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224 };
+
+ 		for (int k = 0; k < points.size(); k++) {
 			int x0 = points[k].x;
 			int y0 = points[k].y;
 			uchar * pix = img.ptr<uchar>(y0) + x0;
 
 			vector<int> r(16);
-
-			r[0] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (x0 + i >= img.cols) {
-					break;
-				}
-
-				if (pix[i] == 255) {
-					r[0] = 1000 * i;
-					break;
-				}
-			}
-
-			r[1] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (x0 - i < 0) {
-					break;
-				}
-
-				if (pix[-i] == 255) {
-					r[1] = 1000 * i;
-					break;
-				}
-			}
-
-			r[2] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + i >= img.rows) {
-					break;
-				}
-
-				if (*(pix + i * img.cols) == 255) {
-					r[2] = 1000 * i;
-					break;
-				}
-			}
-
-			r[3] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - i < 0) {
-					break;
-				}
-
-				if (*(pix - i * img.cols) == 255) {
-					r[3] = 1000 * i;
-					break;
-				}
-			}
-
-			r[4] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + i >= img.rows || x0 + i >= img.cols) {
-					break;
-				}
-
-				if (*(pix + i * img.cols + i) == 255) {
-					r[4] = 1414 * i;
-					break;
-				}
-			}
-
-			r[5] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + i >= img.rows || x0 - i < 0) {
-					break;
-				}
-
-				if (*(pix + i * img.cols - i) == 255) {
-					r[5] = 1414 * i;
-					break;
-				}
-			}
-
-			r[6] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - i < 0 || x0 + i >= img.cols) {
-					break;
-				}
-
-				if (*(pix - i * img.cols + i) == 255) {
-					r[6] = 1414 * i;
-					break;
-				}
-			}
-
-			r[7] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - i < 0 || x0 - i < 0) {
-					break;
-				}
-
-				if (*(pix - i * img.cols - i) == 255) {
-					r[7] = 1414 * i;
-					break;
-				}
-			}
-
-			r[8] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + i >= img.rows || x0 + 2 * i >= img.cols) {
-					break;
-				}
-
-				if (*(pix + i * img.cols + 2 * i) == 255) {
-					r[8] = 2236 * i;
-					break;
-				}
-			}
-
-			r[9] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + 2 * i >= img.rows || x0 + i >= img.cols) {
-					break;
-				}
-
-				if (*(pix + 2 * i * img.cols + i) == 255) {
-					r[9] = 2236 * i;
-					break;
-				}
-			}
-
-			r[10] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + i >= img.rows || x0 - 2 * i < 0) {
-					break;
-				}
-
-				if (*(pix + i * img.cols - 2 * i) == 255) {
-					r[10] = 2236 * i;
-					break;
-				}
-			}
-
-			r[11] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 + 2 * i >= img.rows || x0 - i < 0) {
-					break;
-				}
-
-				if (*(pix + 2 * i * img.cols - i) == 255) {
-					r[11] = 2236 * i;
-					break;
-				}
-			}
-
-			r[12] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - i < 0 || x0 + 2 * i >= img.cols) {
-					break;
-				}
-
-				if (*(pix - i * img.cols + 2 * i) == 255) {
-					r[12] = 2236 * i;
-					break;
-				}
-			}
-
-			r[13] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - 2 * i < 0 || x0 + i >= img.cols) {
-					break;
-				}
-
-				if (*(pix - 2 * i * img.cols + i) == 255) {
-					r[13] = 2236 * i;
-					break;
-				}
-			}
-
-			r[14] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - i < 0 || x0 - 2 * i < 0) {
-					break;
-				}
-
-				if (*(pix - i * img.cols - 2 * i) == 255) {
-					r[14] = 2236 * i;
-					break;
-				}
-			}
-
-			r[15] = 0;
-			for (int i = 0; i < MaxWidth / 2; i++) {
-				if (y0 - 2 * i < 0 || x0 - i < 0) {
-					break;
-				}
-
-				if (*(pix - 2 * i * img.cols - i) == 255) {
-					r[15] = 2236 * i;
-					break;
-				}
-			}
-
-
 			int zeros = 0;
 			int sumr = 0;
-			for (int i = 0; i < r.size(); i++) {
-				sumr += r[i];
-				if (r[i] == 0) {
+			int avgr = 0;
+			int variancer = 0;
+
+			for (int delt = 0; delt < 16; delt++) {
+				r[delt] = 0;
+				for (int i = 0; i < currentState.ShapeDmax / 2; i++) {
+					if (y0 + dy[delt] * i < 0 || y0 + dy[delt] * i >= img.rows
+						|| x0 + dx[delt] * i < 0 || x0 + dx[delt] * i >= img.cols) {
+						break;
+					}
+
+					if (*(pix + dy[delt] * i * img.cols + dx[delt] * i) == 255) {
+						r[delt] = lcoff[delt] * i;
+						break;
+					}
+				}
+				if (r[delt] < 100 * currentState.ShapeDmin) {
 					zeros++;
+					if (zeros > 1)
+						break;
+				}
+				else {
+					sumr += r[delt];
 				}
 			}
 
@@ -502,28 +328,25 @@ void TSR::Shape() {
 				continue;
 
 			bool isPoint = true;
-			sumr = sumr / (r.size() - zeros);
-			for (int i = 0; i < r.size(); i++) {
-				if (r[i] == 0)
+			avgr = sumr / (16 - zeros);
+			for (int i = 0; i < 16; i++) {
+				if (r[i] < 100 * currentState.ShapeDmin)
 					continue;
 
-				if (r[i] - sumr > sumr / 4 || sumr - r[i] > sumr / 4) {
-					isPoint = false;
-					break;
-				}
+				variancer += (r[i] - avgr) * (r[i] - avgr);
 			}
 
-			if (isPoint) {
+			if (variancer < currentState.ShapeVariance) {
 				for (auto it = finalpoints.begin(); it != finalpoints.end(); it++) {
 					if ((points[k].x - it->x) * (points[k].x - it->x) + (points[k].y - it->y) * (points[k].y - it->y)
-						< (long long)sumr * (long long)sumr / 1000000) {
+						< (long long)avgr * (long long)avgr / 10000) {
 						isPoint = false;
 						break;
 					}
 				}
 				if (isPoint) {
 					finalpoints.push_back(points[k]);
-					circles.push_back(Vec3f(points[k].x, points[k].y, (float)sumr / 1000));
+					circles.push_back(Vec3f(points[k].x, points[k].y, (float)avgr / 100));
 				}
 					
 			}

@@ -119,6 +119,13 @@ public:
     QLabel *label_16;
     QSpinBox *edtHoughP2;
     QGroupBox *boxShpaePatternCircle;
+    QGridLayout *gridLayout_8;
+    QLabel *label_18;
+    QLabel *label_19;
+    QSpinBox *edtShapeDmin;
+    QLabel *label_20;
+    QSpinBox *edtShapeVariance;
+    QSpinBox *edtShapeDmax;
     QWidget *widget_3;
     QMenuBar *menuBar;
     QMenu *mainMenu;
@@ -641,7 +648,52 @@ public:
 
         boxShpaePatternCircle = new QGroupBox(page_2);
         boxShpaePatternCircle->setObjectName(QStringLiteral("boxShpaePatternCircle"));
+        sizePolicy3.setHeightForWidth(boxShpaePatternCircle->sizePolicy().hasHeightForWidth());
+        boxShpaePatternCircle->setSizePolicy(sizePolicy3);
         boxShpaePatternCircle->setCheckable(true);
+        gridLayout_8 = new QGridLayout(boxShpaePatternCircle);
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setContentsMargins(11, 11, 11, 11);
+        gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
+        label_18 = new QLabel(boxShpaePatternCircle);
+        label_18->setObjectName(QStringLiteral("label_18"));
+
+        gridLayout_8->addWidget(label_18, 0, 0, 1, 1);
+
+        label_19 = new QLabel(boxShpaePatternCircle);
+        label_19->setObjectName(QStringLiteral("label_19"));
+
+        gridLayout_8->addWidget(label_19, 1, 0, 1, 1);
+
+        edtShapeDmin = new QSpinBox(boxShpaePatternCircle);
+        edtShapeDmin->setObjectName(QStringLiteral("edtShapeDmin"));
+        edtShapeDmin->setMaximum(99);
+        edtShapeDmin->setSingleStep(1);
+        edtShapeDmin->setValue(0);
+
+        gridLayout_8->addWidget(edtShapeDmin, 1, 1, 1, 1);
+
+        label_20 = new QLabel(boxShpaePatternCircle);
+        label_20->setObjectName(QStringLiteral("label_20"));
+
+        gridLayout_8->addWidget(label_20, 1, 2, 1, 1);
+
+        edtShapeVariance = new QSpinBox(boxShpaePatternCircle);
+        edtShapeVariance->setObjectName(QStringLiteral("edtShapeVariance"));
+        edtShapeVariance->setMaximum(100000000);
+        edtShapeVariance->setSingleStep(1000);
+        edtShapeVariance->setValue(0);
+
+        gridLayout_8->addWidget(edtShapeVariance, 0, 1, 1, 3);
+
+        edtShapeDmax = new QSpinBox(boxShpaePatternCircle);
+        edtShapeDmax->setObjectName(QStringLiteral("edtShapeDmax"));
+        edtShapeDmax->setMaximum(999);
+        edtShapeDmax->setSingleStep(1);
+        edtShapeDmax->setValue(0);
+
+        gridLayout_8->addWidget(edtShapeDmax, 1, 3, 1, 1);
+
 
         verticalLayout_3->addWidget(boxShpaePatternCircle);
 
@@ -742,6 +794,9 @@ public:
         label_15->setText(QApplication::translate("MainWinClass", "p1:", 0));
         label_16->setText(QApplication::translate("MainWinClass", "p2:", 0));
         boxShpaePatternCircle->setTitle(QApplication::translate("MainWinClass", "\345\277\253\351\200\237\346\250\241\346\235\277\345\214\271\351\205\215\345\234\206\346\243\200\346\265\213", 0));
+        label_18->setText(QApplication::translate("MainWinClass", "\346\226\271\345\267\256\357\274\232", 0));
+        label_19->setText(QApplication::translate("MainWinClass", "\347\233\264\345\276\204\357\274\232", 0));
+        label_20->setText(QApplication::translate("MainWinClass", "~", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "\345\275\242\347\212\266\346\243\200\346\265\213\345\256\232\344\275\215", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
         menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));

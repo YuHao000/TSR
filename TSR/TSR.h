@@ -35,6 +35,8 @@ typedef struct {
 	// 形状检测
 	int ShapeMethod;
 	int HoughP1, HoughP2;
+	int ShapeVariance;
+	int ShapeDmin, ShapeDmax;
 }TSRParam_t;
 
 typedef struct {
