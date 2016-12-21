@@ -891,6 +891,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QGroupBox" name="boxShpaePatternCircle">
+            <property name="title">
+             <string>快速模板匹配圆检测</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QWidget" name="widget_3" native="true"/>
           </item>
          </layout>
@@ -929,6 +939,7 @@
      <string>操作</string>
     </property>
     <addaction name="actionResend"/>
+    <addaction name="actionSaveImage"/>
    </widget>
    <addaction name="mainMenu"/>
    <addaction name="menu"/>
@@ -971,6 +982,11 @@
   <action name="actionResend">
    <property name="text">
     <string>再次处理</string>
+   </property>
+  </action>
+  <action name="actionSaveImage">
+   <property name="text">
+    <string>保存图片</string>
    </property>
   </action>
  </widget>

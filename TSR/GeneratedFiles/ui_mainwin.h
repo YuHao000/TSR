@@ -45,6 +45,7 @@ public:
     QAction *actionOpenImg;
     QAction *actionOpenVideo;
     QAction *actionResend;
+    QAction *actionSaveImage;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     ImageViewer *PicArea;
@@ -117,6 +118,7 @@ public:
     QSpinBox *edtHoughP1;
     QLabel *label_16;
     QSpinBox *edtHoughP2;
+    QGroupBox *boxShpaePatternCircle;
     QWidget *widget_3;
     QMenuBar *menuBar;
     QMenu *mainMenu;
@@ -151,6 +153,8 @@ public:
         actionOpenVideo->setObjectName(QStringLiteral("actionOpenVideo"));
         actionResend = new QAction(MainWinClass);
         actionResend->setObjectName(QStringLiteral("actionResend"));
+        actionSaveImage = new QAction(MainWinClass);
+        actionSaveImage->setObjectName(QStringLiteral("actionSaveImage"));
         centralWidget = new QWidget(MainWinClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
@@ -635,6 +639,12 @@ public:
 
         verticalLayout_3->addWidget(boxShapeHoughCircle);
 
+        boxShpaePatternCircle = new QGroupBox(page_2);
+        boxShpaePatternCircle->setObjectName(QStringLiteral("boxShpaePatternCircle"));
+        boxShpaePatternCircle->setCheckable(true);
+
+        verticalLayout_3->addWidget(boxShpaePatternCircle);
+
         widget_3 = new QWidget(page_2);
         widget_3->setObjectName(QStringLiteral("widget_3"));
 
@@ -671,6 +681,7 @@ public:
         mainMenu->addSeparator();
         mainMenu->addAction(actionQuit);
         menu->addAction(actionResend);
+        menu->addAction(actionSaveImage);
 
         retranslateUi(MainWinClass);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWinClass, SLOT(close()));
@@ -688,6 +699,7 @@ public:
         actionOpenImg->setText(QApplication::translate("MainWinClass", "\346\211\223\345\274\200\345\233\276\347\211\207", 0));
         actionOpenVideo->setText(QApplication::translate("MainWinClass", "\346\211\223\345\274\200\350\247\206\351\242\221", 0));
         actionResend->setText(QApplication::translate("MainWinClass", "\345\206\215\346\254\241\345\244\204\347\220\206", 0));
+        actionSaveImage->setText(QApplication::translate("MainWinClass", "\344\277\235\345\255\230\345\233\276\347\211\207", 0));
         VideoControlBox->setTitle(QApplication::translate("MainWinClass", "\350\247\206\351\242\221\346\216\247\345\210\266", 0));
         btnPlay->setText(QApplication::translate("MainWinClass", "\346\222\255\346\224\276", 0));
         btnPrevious->setText(QApplication::translate("MainWinClass", "\344\270\212\344\270\200\345\270\247", 0));
@@ -729,6 +741,7 @@ public:
         boxShapeHoughCircle->setTitle(QApplication::translate("MainWinClass", "Hough\345\234\206\346\243\200\346\265\213", 0));
         label_15->setText(QApplication::translate("MainWinClass", "p1:", 0));
         label_16->setText(QApplication::translate("MainWinClass", "p2:", 0));
+        boxShpaePatternCircle->setTitle(QApplication::translate("MainWinClass", "\345\277\253\351\200\237\346\250\241\346\235\277\345\214\271\351\205\215\345\234\206\346\243\200\346\265\213", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "\345\275\242\347\212\266\346\243\200\346\265\213\345\256\232\344\275\215", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
         menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));

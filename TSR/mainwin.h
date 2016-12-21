@@ -8,6 +8,7 @@
 #include <QMutex>
 #include <QTextCodec>
 #include <QSettings>
+#include <QDateTime>
 #include <windows.h>
 #include <string>
 #include "ui_mainwin.h"
@@ -29,10 +30,13 @@ private:
 	Ui::MainWinClass ui;
 	cv::VideoCapture capture;
 	bool AutoPlay = false;
-	cv::Mat ImgDisplay;
+	cv::Mat ImgDisplay, ImgDisplay2, ImgDisplay3;
+	const std::string SaveImagePath = "D:\\CSC\\OpenCV\\TSR\\Saved\\";
+
 
 	// Widget groups
 	std::vector<QGroupBox *> Binaryboxs;
+	std::vector<QGroupBox *> Shapeboxs;
 
 	std::string UTF8ToGBK(const char* strUTF8);
 	void GetSettings();
@@ -44,6 +48,7 @@ private:
 private slots:
 	void OpenNewImg();
 	void OpenNewVideo();
+	void SaveImage();
 	void SendImage();
 	void UpdateImage();
 	void SetVideoAutoPlay();

@@ -32,8 +32,8 @@ typedef struct {
 	bool BinaryPost;
 	int BinaryDilate, BinaryErode;
 
-	// Hough圆检测
-	bool HoughEnabled;
+	// 形状检测
+	int ShapeMethod;
 	int HoughP1, HoughP2;
 }TSRParam_t;
 
@@ -41,6 +41,9 @@ typedef struct {
 	double ElapseTime;
 
 	std::vector<cv::Vec3f> circles;
+
+	std::vector<cv::Point> progressPoints;
+	std::vector<cv::Point> points;
 }TSRResult_t;
 
 extern cv::Mat ImgRead;
@@ -75,7 +78,7 @@ private:
 
 	void Binary();
 
-	void Hough();
+	void Shape();
 };
 
 #endif

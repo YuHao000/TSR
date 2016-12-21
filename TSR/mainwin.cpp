@@ -19,14 +19,16 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 
 	ui.mainToolBar->addAction(ui.actionOpenImg);
 	ui.mainToolBar->addAction(ui.actionOpenVideo);
+	ui.mainToolBar->addAction(ui.actionSaveImage);
 	ui.mainToolBar->addAction(ui.actionResend);
 
-	ui.toolBox->setCurrentIndex(1);
 	Binaryboxs.push_back(ui.boxBinaryHSV);
 	Binaryboxs.push_back(ui.boxBinaryRGB);
 	Binaryboxs.push_back(ui.boxBinarySVF);
 	Binaryboxs.push_back(ui.boxBinaryMixed);
-	ui.toolBox->setCurrentIndex(0);
+
+	Shapeboxs.push_back(ui.boxShapeHoughCircle);
+	Shapeboxs.push_back(ui.boxShpaePatternCircle);
 
 	GetSettings();
 	myTSR.start();
@@ -35,6 +37,7 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 	connect(ui.actionOpenImg, SIGNAL(triggered()), this, SLOT(OpenNewImg()));
 	connect(ui.actionOpenVideo, SIGNAL(triggered()), this, SLOT(OpenNewVideo()));
 	connect(ui.actionResend, SIGNAL(triggered()), this, SLOT(SendImage()));
+	connect(ui.actionSaveImage, SIGNAL(triggered()), this, SLOT(SaveImage()));
 
 	connect(&myTSR, SIGNAL(ImageReady()), this, SLOT(UpdateImage()));
 
@@ -61,13 +64,6 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 
 // Open New Image File Slot
 void MainWin::OpenNewImg() {
-	// Release video capture first
-	if (capture.isOpened())
-		capture.release();
-
-	// Disable Video Control Box
-	ui.VideoControlBox->setEnabled(false);
-
 	QString path = QFileDialog::getOpenFileName(this, "打开图片文件",
 		"D:\\Pictures\\SJTU_pic\\sjtuvis", "图片(*.png *.jpg)");
 
@@ -83,13 +79,6 @@ void MainWin::OpenNewImg() {
 
 // Open New Video File Slot
 void MainWin::OpenNewVideo() {
-	// Release video capture first
-	if (capture.isOpened())
-		capture.release();
-
-	// Disable Video Control Box First
-	ui.VideoControlBox->setEnabled(false);
-
 	QString path = QFileDialog::getOpenFileName(this, "打开视频文件",
 		"D:\\CSC\\OpenCV\\Record", "视频(*.mov *.mp4 *.avi)");
 
@@ -104,6 +93,22 @@ void MainWin::OpenNewVideo() {
 		// Display first frame
 		CaptureFrame(0);
 	}
+}
+
+// Save Image
+void MainWin::SaveImage() {
+	QDateTime time = QDateTime::currentDateTime();//获取系统现在的时间
+	string str = time.toString("MMddhhmmss").toStdString(); //设置显示格式
+	ImgReadLock.lock();
+	imwrite(SaveImagePath + str + "_ImgRead.png", ImgRead);
+	ImgReadLock.unlock();
+
+	imwrite(SaveImagePath + str + "_ImgDisplay.png", ImgDisplay);
+	imwrite(SaveImagePath + str + "_ImgDisplay2.png", ImgDisplay2);
+
+	ImgOutLock.lock();
+	imwrite(SaveImagePath + str + "_ImgOut.png", ImgOut);
+	ImgOutLock.unlock();
 }
 
 // Send current image to TSR Algorithm module
@@ -140,7 +145,7 @@ void MainWin::SendImage() {
 	TSRParam.BinaryDilate = ui.edtBinaryDilate->value();
 	TSRParam.BinaryErode = ui.edtBinaryErode->value();
 	
-	TSRParam.HoughEnabled = ui.boxShapeHoughCircle->isChecked();
+	TSRParam.ShapeMethod = GetBoxMethod(Shapeboxs);
 	TSRParam.HoughP1 = ui.edtHoughP1->value();
 	TSRParam.HoughP2 = ui.edtHoughP2->value();
 
@@ -160,9 +165,8 @@ void MainWin::UpdateImage() {
 	ImgReadLock.unlock();
 
 	// 根据掩膜生成提取区域彩色图
-	Mat tmp(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(0,0,0));
-	ImgDisplay(Rect(0,0,ImgOut.cols,ImgOut.rows)).copyTo(tmp, ImgOut);
-	((ImageViewer *)ui.PicArea)->setPic(2, tmp);
+	ImgDisplay2 = Mat(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(0, 0, 0));
+	ImgDisplay(Rect(0,0,ImgOut.cols,ImgOut.rows)).copyTo(ImgDisplay2, ImgOut);
 
 	ImgOutLock.unlock();
 	
@@ -189,7 +193,7 @@ void MainWin::UpdateImage() {
 
 
 	// 画出Hough圆检测
-	if (ui.boxShapeHoughCircle->isChecked()) {
+	if (GetBoxMethod(Shapeboxs) == 0  || GetBoxMethod(Shapeboxs) == 1) {
 		for (size_t i = 0; i < drawCircles.size(); i++) {
 			Point center(cvRound(drawCircles[i][0]), cvRound(drawCircles[i][1]));
 			int radius = cvRound(drawCircles[i][2]);
@@ -199,9 +203,21 @@ void MainWin::UpdateImage() {
 		}
 	}
 
+	// tmp
+	vector<Point> drawPoints(TSRResult.progressPoints);
+	vector<Point> finalDrawPoints(TSRResult.points);
+	if (GetBoxMethod(Shapeboxs) == 1) {
+		for (size_t i = 0; i < drawPoints.size(); i++) {
+			ImgDisplay2.at<Vec3b>(drawPoints[i])[1] = 255;
+		}
 
+		for (size_t i = 0; i < finalDrawPoints.size(); i++) {
+			circle(ImgDisplay2, finalDrawPoints[i], 3, Scalar(255, 0, 0), -1, 8, 0);
+		}
+	}
 
 	((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
+	((ImageViewer *)ui.PicArea)->setPic(2, ImgDisplay2);
 
 	if (capture.isOpened() && AutoPlay) {
 		NextFrame();
@@ -301,8 +317,8 @@ void MainWin::GetSettings() {
 	ui.edtBinaryDilate->setValue(mySetting.value("BinaryDilate", 0).toInt());
 	ui.edtBinaryErode->setValue(mySetting.value("BinaryErode", 0).toInt());
 
-	// Hough
-	ui.boxShapeHoughCircle->setChecked(mySetting.value("HoughEnabled", false).toBool());
+	// Shape
+	SetBoxMethod(Shapeboxs, mySetting.value("ShapeMethod", 0).toInt());
 	ui.edtHoughP1->setValue(mySetting.value("HoughP1", 100).toInt());
 	ui.edtHoughP2->setValue(mySetting.value("HoughP2", 100).toInt());
 }
@@ -346,8 +362,8 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("BinaryDilate", ui.edtBinaryDilate->value());
 	mySetting.setValue("BinaryErode", ui.edtBinaryErode->value());
 
-	// Hough
-	mySetting.setValue("HoughEnabled", ui.boxShapeHoughCircle->isChecked());
+	// Shape
+	mySetting.setValue("ShapeMethod", GetBoxMethod(Shapeboxs));
 	mySetting.setValue("HoughP1", ui.edtHoughP1->value());
 	mySetting.setValue("HoughP2", ui.edtHoughP2->value());
 }
