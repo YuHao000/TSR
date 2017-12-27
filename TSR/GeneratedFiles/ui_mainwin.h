@@ -126,6 +126,12 @@ public:
     QLabel *label_20;
     QSpinBox *edtShapeVariance;
     QSpinBox *edtShapeDmax;
+    QGroupBox *boxShapeTriangle;
+    QGridLayout *gridLayout_9;
+    QSpinBox *edtShapeVariance_2;
+    QLabel *label_21;
+    QLabel *label_23;
+    QSpinBox *edtShapeCorner;
     QWidget *widget_3;
     QMenuBar *menuBar;
     QMenu *mainMenu;
@@ -697,6 +703,44 @@ public:
 
         verticalLayout_3->addWidget(boxShpaePatternCircle);
 
+        boxShapeTriangle = new QGroupBox(page_2);
+        boxShapeTriangle->setObjectName(QStringLiteral("boxShapeTriangle"));
+        sizePolicy3.setHeightForWidth(boxShapeTriangle->sizePolicy().hasHeightForWidth());
+        boxShapeTriangle->setSizePolicy(sizePolicy3);
+        boxShapeTriangle->setCheckable(true);
+        gridLayout_9 = new QGridLayout(boxShapeTriangle);
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setContentsMargins(11, 11, 11, 11);
+        gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
+        edtShapeVariance_2 = new QSpinBox(boxShapeTriangle);
+        edtShapeVariance_2->setObjectName(QStringLiteral("edtShapeVariance_2"));
+        edtShapeVariance_2->setMaximum(100000000);
+        edtShapeVariance_2->setSingleStep(1000);
+        edtShapeVariance_2->setValue(0);
+
+        gridLayout_9->addWidget(edtShapeVariance_2, 0, 1, 1, 2);
+
+        label_21 = new QLabel(boxShapeTriangle);
+        label_21->setObjectName(QStringLiteral("label_21"));
+
+        gridLayout_9->addWidget(label_21, 0, 0, 1, 1);
+
+        label_23 = new QLabel(boxShapeTriangle);
+        label_23->setObjectName(QStringLiteral("label_23"));
+
+        gridLayout_9->addWidget(label_23, 1, 0, 1, 1);
+
+        edtShapeCorner = new QSpinBox(boxShapeTriangle);
+        edtShapeCorner->setObjectName(QStringLiteral("edtShapeCorner"));
+        edtShapeCorner->setMaximum(99);
+        edtShapeCorner->setSingleStep(1);
+        edtShapeCorner->setValue(0);
+
+        gridLayout_9->addWidget(edtShapeCorner, 1, 2, 1, 1);
+
+
+        verticalLayout_3->addWidget(boxShapeTriangle);
+
         widget_3 = new QWidget(page_2);
         widget_3->setObjectName(QStringLiteral("widget_3"));
 
@@ -797,6 +841,9 @@ public:
         label_18->setText(QApplication::translate("MainWinClass", "\346\226\271\345\267\256\357\274\232", 0));
         label_19->setText(QApplication::translate("MainWinClass", "\347\233\264\345\276\204\357\274\232", 0));
         label_20->setText(QApplication::translate("MainWinClass", "~", 0));
+        boxShapeTriangle->setTitle(QApplication::translate("MainWinClass", "\345\277\253\351\200\237\350\247\222\347\202\271\344\270\211\350\247\222\345\275\242\346\243\200\346\265\213", 0));
+        label_21->setText(QApplication::translate("MainWinClass", "\346\226\271\345\267\256\357\274\232", 0));
+        label_23->setText(QApplication::translate("MainWinClass", "\350\247\222\347\202\271\357\274\232", 0));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWinClass", "\345\275\242\347\212\266\346\243\200\346\265\213\345\256\232\344\275\215", 0));
         mainMenu->setTitle(QApplication::translate("MainWinClass", "\346\226\207\344\273\266", 0));
         menu->setTitle(QApplication::translate("MainWinClass", "\346\223\215\344\275\234", 0));

@@ -36,6 +36,7 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 
 	Shapeboxs.push_back(ui.boxShapeHoughCircle);
 	Shapeboxs.push_back(ui.boxShpaePatternCircle);
+	Shapeboxs.push_back(ui.boxShapeTriangle);
 
 	GetSettings();
 	myTSR.start();
@@ -58,7 +59,7 @@ MainWin::MainWin(QWidget *parent) : QMainWindow(parent){
 // Open New Image File Slot
 void MainWin::OpenNewImg() {
 	QString path = QFileDialog::getOpenFileName(this, "打开图片文件",
-		"D:\\Pictures\\SJTU_pic\\sjtuvis", "图片(*.png *.jpg)");
+		"C:\\Users\\g1992\\Videos\\Img", "图片(*.png *.jpg)");
 
 	if (!path.isEmpty()) {
 		ImgReadLock.lock();
@@ -73,7 +74,7 @@ void MainWin::OpenNewImg() {
 // Open New Video File Slot
 void MainWin::OpenNewVideo() {
 	QString path = QFileDialog::getOpenFileName(this, "打开视频文件",
-		"D:\\CSC\\OpenCV\\Record", "视频(*.mov *.mp4 *.avi)");
+		"C:\\Users\\g1992\\Videos\\Circle", "视频(*.mov *.mp4 *.avi *.m4v)");
 
 	if (!path.isEmpty()) {
 		capture.open(UTF8ToGBK(path.toStdString().data()));
@@ -98,6 +99,7 @@ void MainWin::SaveImage() {
 
 	imwrite(SaveImagePath + str + "_ImgDisplay.png", ImgDisplay);
 	imwrite(SaveImagePath + str + "_ImgDisplay2.png", ImgDisplay2);
+	imwrite(SaveImagePath + str + "_ImgDisplay3.png", ImgDisplay3);
 
 	ImgOutLock.lock();
 	imwrite(SaveImagePath + str + "_ImgOut.png", ImgOut);
@@ -130,7 +132,7 @@ void MainWin::SendImage() {
 	TSRParam.BinaryHmin = ui.edtBinaryHmin->value();
 	TSRParam.BinaryHmax = ui.edtBinaryHmax->value();
 	TSRParam.BinarySmin = ui.edtBinarySmin->value();
-	TSRParam.BinaryVmin = ui.edtBinaryVmin->value();
+	TSRParam.BinaryImin = ui.edtBinaryVmin->value();
 	TSRParam.BinaryRed = ui.edtBinaryRed->value();
 	TSRParam.BinaryYellow = ui.edtBinaryYellow->value();
 	TSRParam.BinaryD = ui.edtBinaryD->value();
@@ -144,6 +146,7 @@ void MainWin::SendImage() {
 	TSRParam.ShapeVariance = ui.edtShapeVariance->value();
 	TSRParam.ShapeDmin = ui.edtShapeDmin->value();
 	TSRParam.ShapeDmax = ui.edtShapeDmax->value();
+	TSRParam.ShapeCorner = ui.edtShapeCorner->value();
 
 	TSRParam.ProcessStep = TSRParam.ReadImg;
 	TSRParamLock.unlock();
@@ -152,6 +155,7 @@ void MainWin::SendImage() {
 // TSR Algorithm callback slot
 // Image Processing Finished
 void MainWin::UpdateImage() {
+	Mat ResultMask = Mat(ImgOut.rows, ImgOut.cols, CV_8UC1, Scalar(0));
 	ImgReadLock.lock();
 	ImgOutLock.lock();
 
@@ -183,9 +187,16 @@ void MainWin::UpdateImage() {
 	}
 
 	TSRResultLock.lock();
-	ui.label->setText(QString::number(TSRResult.ElapseTime));
+	//ui.label->setText(QString::number(TSRResult.ElapseTime));
 	vector<Vec3f> drawCircles(TSRResult.circles);
 	TSRResultLock.unlock();
+
+	if (drawCircles.empty()) {
+		ImgDisplay3 = Mat(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(140, 92, 34));
+	}
+	else {
+		ImgDisplay3 = Mat(ImgOut.rows, ImgOut.cols, CV_8UC3, Scalar(76, 177, 34));
+	}
 
 
 	// 画出Hough圆检测
@@ -196,24 +207,29 @@ void MainWin::UpdateImage() {
 
 			circle(ImgDisplay, center, 3, Scalar(255, 0, 0), -1, 8, 0);
 			circle(ImgDisplay, center, radius, Scalar(255, 0, 0), 3, 8, 0);
+			circle(ResultMask, center, radius, Scalar(255), -1, 8, 0);
 		}
 	}
+	ImgRead.copyTo(ImgDisplay3, ResultMask);
 
 	// tmp
 	vector<Point> drawPoints(TSRResult.progressPoints);
 	vector<Point> finalDrawPoints(TSRResult.points);
-	if (GetBoxMethod(Shapeboxs) == 1) {
-		for (size_t i = 0; i < drawPoints.size(); i++) {
-			ImgDisplay2.at<Vec3b>(drawPoints[i])[1] = 255;
-		}
+	//if (GetBoxMethod(Shapeboxs)) {
+	//	for (size_t i = 0; i < drawPoints.size(); i++) {
+	//		ImgDisplay2.at<Vec3b>(drawPoints[i])[1] = 255;
+	//	}
 
-		for (size_t i = 0; i < finalDrawPoints.size(); i++) {
-			circle(ImgDisplay2, finalDrawPoints[i], 3, Scalar(255, 0, 0), -1, 8, 0);
-		}
-	}
+	//	for (size_t i = 0; i < finalDrawPoints.size(); i++) {
+	//		circle(ImgDisplay2, finalDrawPoints[i], 3, Scalar(255, 0, 0), -1, 8, 0);
+	//	}
+	//}
 
 	((ImageViewer *)ui.PicArea)->setPic(0, ImgDisplay);
 	((ImageViewer *)ui.PicArea)->setPic(2, ImgDisplay2);
+	((ImageViewer *)ui.PicArea)->setPic(3, ImgDisplay3);
+
+	ui.label->setText(QString::number(drawCircles.size()));
 
 	if (capture.isOpened() && AutoPlay) {
 		NextFrame();
@@ -320,6 +336,7 @@ void MainWin::GetSettings() {
 	ui.edtShapeVariance->setValue(mySetting.value("ShapeVariance", 0).toInt());
 	ui.edtShapeDmin->setValue(mySetting.value("ShapeDmin", 0).toInt());
 	ui.edtShapeDmax->setValue(mySetting.value("ShapeDmax", 0).toInt());
+	ui.edtShapeCorner->setValue(mySetting.value("ShapeCorner", 0).toInt());
 }
 
 void MainWin::closeEvent(QCloseEvent *event) {
@@ -368,6 +385,7 @@ void MainWin::closeEvent(QCloseEvent *event) {
 	mySetting.setValue("ShapeVariance", ui.edtShapeVariance->value());
 	mySetting.setValue("ShapeDmin", ui.edtShapeDmin->value());
 	mySetting.setValue("ShapeDmax", ui.edtShapeDmax->value());
+	mySetting.setValue("ShapeCorner", ui.edtShapeCorner->value());
 }
 
 // 读取单选按钮组的设置

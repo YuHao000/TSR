@@ -125,35 +125,36 @@ void TSR::HistogramEqualize() {
 
 // 二值化
 void TSR::Binary() {
-	vector<Mat> channels;
+	
 	Mat hsvimg(img.rows, img.cols, CV_8UC3);
 	vector<Mat> hsvchannels;
 
 	switch (currentState.BinaryMethod)
 	{
-	// HSV
+	// HSI
 	case 0:
-		cvtColor(img, img, CV_BGR2HSV);
+		//BGR2HSI(img, channels[0], channels[1], channels[2]);
+		cvtColor(img, img, CV_BGR2HLS);
 		split(img, channels);
 		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
 		for (int i = 0; i < img.rows; i++) {
 			uchar * H = channels[0].ptr<uchar>(i);
-			uchar * S = channels[1].ptr<uchar>(i);
-			uchar * V = channels[2].ptr<uchar>(i);
+			uchar * I = channels[1].ptr<uchar>(i);
+			uchar * S = channels[2].ptr<uchar>(i);
 			uchar * data = img.ptr<uchar>(i);
 			for (int j = 0; j < img.cols; j++) {
 				if (currentState.BinaryHmin < 0) {
-					if (H[j] > currentState.BinaryHmax / 2 && H[j] < (currentState.BinaryHmin + 360) / 2)
+					if (2 * (int)H[j] > currentState.BinaryHmax && 2 * (int)H[j] < (currentState.BinaryHmin + 360))
 						continue;
 				}
-				else if (H[j] < currentState.BinaryHmin / 2 || H[j] > currentState.BinaryHmax / 2) {
+				else if (2 * (int)H[j] < currentState.BinaryHmin || 2 * (int)H[j] > currentState.BinaryHmax ) {
 					continue;
 				}
 
 				if (S[j] < currentState.BinarySmin)
 					continue;
 
-				if (V[j] < currentState.BinaryVmin)
+				if (I[j] < currentState.BinaryImin || I[j] > 210)
 					continue;
 
 				data[j] = 255;
@@ -173,12 +174,28 @@ void TSR::Binary() {
 			
 			for (int j = 0; j < img.cols; j++) {
 				if (currentState.SignType == 0) {
-					if (R[j] - B[j] > currentState.BinaryRed && R[j] - G[j] > currentState.BinaryRed)
-						data[j] = 255;
+					if (currentState.BinaryRed > 30) {
+						if (R[j] - B[j] > 20 && R[j] - G[j] >= 20)
+							data[j] = 255;
+					}
+					else {
+						if ((R[j] + B[j] + G[j])*0.4 <= R[j] && (R[j] + B[j] + G[j])*0.35 >= G[j])
+							data[j] = 255;
+					}
+					//if (R[j] - B[j] > currentState.BinaryRed && R[j] - G[j] > currentState.BinaryRed)
+					//if (R[j] - B[j] > currentState.BinaryRed && R[j] - G[j] > currentState.BinaryRed && (R[j]+B[j]+G[j])*0.4 < R[j] && (R[j] + B[j] + G[j])*0.35 > G[j])
+					//	data[j] = 255;
 				}
 				else if (currentState.SignType == 1) {
-					if (R[j] - B[j] > currentState.BinaryYellow && G[j] - B[j] > currentState.BinaryYellow)
-						data[j] = 255;
+					if (currentState.BinaryRed > 30) {
+						if (R[j] - B[j] > 30 && G[j] - B[j] >= 30)
+							data[j] = 255;
+					}
+					else {
+						if ((R[j] + B[j] + G[j])*0.85 < R[j] + G[j])
+							data[j] = 255;
+					}
+					//if (R[j] - B[j] > currentState.BinaryYellow && G[j] - B[j] > currentState.BinaryYellow)
 				}
 			}
 		}
@@ -202,37 +219,87 @@ void TSR::Binary() {
 		break;
 
 	// Mixed Method
-	// 1. 改进SVF算法，加快其运算速度
-	// 2. 增加H分量判断
 	case 3:
-		cvtColor(img, hsvimg, CV_BGR2HSV);
+		//cvtColor(img, hsvimg, CV_BGR2HSV);
 		split(img, channels);
-		split(hsvimg, hsvchannels);
+		//split(hsvimg, hsvchannels);
 		img = Mat(img.rows, img.cols, CV_8UC1, Scalar(0));
 		for (int i = 0; i < img.rows; i++) {
 			uchar * B = channels[0].ptr<uchar>(i);
 			uchar * G = channels[1].ptr<uchar>(i);
 			uchar * R = channels[2].ptr<uchar>(i);
-			uchar * H = hsvchannels[0].ptr<uchar>(i);
+			//uchar * H = hsvchannels[0].ptr<uchar>(i);
 			uchar * data = img.ptr<uchar>(i);
+			
 			for (int j = 0; j < img.cols; j++) {
-				int tmp;
-				if (B[j] < G[j])
-					tmp = R[j] - B[j];
-				else
-					tmp = R[j] - G[j];
-				if (tmp >= 1.5 * currentState.BinaryD) {
-					if (currentState.BinaryHmin < 0) {
-						if (H[j] > currentState.BinaryHmax / 2 && H[j] < (currentState.BinaryHmin + 360) / 2)
-							continue;
+				int r = R[j], g = G[j], b = B[j];
+				if (currentState.SignType == 0) {
+					if (R[j] >= G[j] && G[j] >= B[j]) {
+						if (r - g < 20) continue;
+						if (r - b < 30) continue;
+						if (r - 3 * g + 2 * b < 0) continue;
+						if (3 * r - 2 * g - 2 * b < 0) continue;
+						if (7 * r - 13 * g + 7 * b < 0) continue;
+						if (r + b >= 255) {
+							if (31 * r - 19 * b < 3060) continue;
+							if (r + b > 420) continue;
+							data[j] = 255;
+						}
+						else {
+							if (19 * r - 31 * b < 0) continue;
+							if (r + b < 40) continue;
+							data[j] = 255;
+						}
 					}
-					else if (H[j] < currentState.BinaryHmin / 2 || H[j] > currentState.BinaryHmax / 2) {
+					else if (R[j] >= B[j] && B[j] >= G[j]) {
+						if (r - b < 20) continue;
+						if (r - g < 30) continue;
+						if (2 * r + g - 3 * b < 0) continue;
+						if (3 * r - 2 * g - 2 * b < 0) continue;
+						if (7 * r - 13 * g + 7 * b < 0) continue;
+						if (r + g >= 255) {
+							if (31 * r - 19 * g < 3060) continue;
+							if (r + g > 420) continue;
+							data[j] = 255;
+						}
+						else {
+							if (19 * r - 31 * g < 0) continue;
+							if (r + g < 40) continue;
+							data[j] = 255;
+						}
+					}
+					else {
 						continue;
 					}
-					data[j] = 255;
+				}
+				else {
+					if (R[j] >= G[j] && G[j] >= B[j]) {
+						if (r - b < 30) continue;
+						if (g - b < 30) continue;
+						if (r - g < 0) continue;
+						if (-7 * r + 12 * g - 5 * b < 0) continue;
+						if (3 * r + 3 * g - 17 * b < 0) continue;
+						if (r + b >= 255) {
+							if (31 * r - 19 * b < 3060) continue;
+							if (r + b > 420) continue;
+							data[j] = 255;
+						}
+						else {
+							if (19 * r - 31 * b < 0) continue;
+							if (r + b < 40) continue;
+							data[j] = 255;
+						}
+					}
+					else {
+						continue;
+					}
 				}
 			}
+			
+
 		}
+
+
 		break;
 
 	default:
@@ -254,13 +321,17 @@ void TSR::Binary() {
 // 形状检测
 void TSR::Shape() {
 	vector<Vec3f> circles;
-	vector<Point> points;
+	vector<Point> points, points2;
 	vector<Point> finalpoints;
 
+
+	int dx[] = { +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1, +0, +1, +1, +2 };
+	int dy[] = { +0, +1, +1, +2, +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1 };
+	int lcoff[] = { 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224 };
 	switch (currentState.ShapeMethod) {
 	// Hough
 	case 0:
-		HoughCircles(img, circles, HOUGH_GRADIENT, 1, 50, currentState.HoughP1, currentState.HoughP2);
+		HoughCircles(img, circles, HOUGH_GRADIENT, 1, currentState.HoughP1, 150, currentState.HoughP2, currentState.ShapeDmin / 2, currentState.ShapeDmax / 2);
 		break;
 
 	// Quick Pattern
@@ -285,10 +356,6 @@ void TSR::Shape() {
 
 		if (!img.isContinuous())
 			return;
-
-		int dx[] = { +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1, +0, +1, +1, +2 };
-		int dy[] = { +0, +1, +1, +2, +1, +2, +1, +1, +0, -1, -1, -2, -1, -2, -1, -1 };
-		int lcoff[] = { 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224, 100, 224, 141, 224 };
 
  		for (int k = 0; k < points.size(); k++) {
 			int x0 = points[k].x;
@@ -352,7 +419,48 @@ void TSR::Shape() {
 			}
 
 		}
+		break;
 
+	case 2:
+		if (!img.isContinuous())
+			return;
+
+		for (int i = 0; i < img.rows; i++) {
+			uchar * data = img.ptr<uchar>(i);
+			int start = 0, end = 0;
+			for (int j = 1; j < img.cols; j++) {
+				if (data[j - 1] < data[j]) {
+					start = j;
+				}
+				else if (data[j - 1] > data[j]) {
+					end = j;
+					if (start > 0) {
+						if (end - start < currentState.ShapeCorner)
+							points.push_back(Point(start + (end - start) / 2, i));
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < points.size(); i++) {
+			if (points[i].y == 0) {
+				
+				continue;
+			}
+				
+			uchar * data = img.ptr<uchar>(points[i].y - 1);
+			bool isPoint = true;
+			for (int j = -currentState.ShapeCorner / 2; j < currentState.ShapeCorner / 2; j++) {
+				if (data[points[i].x + j] != 0) {
+					isPoint = false;
+					break;
+				}
+			}
+			if (isPoint) {
+				points2.push_back(points[i]);
+			}
+		}
+		points = points2;
 
 
 		break;
@@ -363,4 +471,133 @@ void TSR::Shape() {
 	TSRResult.points = finalpoints;
 	TSRResult.progressPoints = points;
 	TSRResultLock.unlock();
+}
+
+void TSR::BGR2HSI(const Mat& src, Mat& channelH, Mat& channelS, Mat& channelI) {
+	Mat matBGR[3];
+	Mat tmp = Mat(src.rows, src.cols, CV_32FC1);
+	split(src, matBGR);
+	Mat channelB, channelG, channelR;
+	matBGR[0].convertTo(channelB, CV_32FC1);
+	matBGR[1].convertTo(channelG, CV_32FC1);
+	matBGR[2].convertTo(channelR, CV_32FC1);
+
+	Mat matMin, matSum;
+	add(channelB, channelG, matSum); // R G B 之和
+	add(matSum, channelR, matSum);
+	//divide(channelB, matSum, channelB);  // 求解 b g r
+	//divide(channelG, matSum, channelG);
+	//divide(channelR, matSum, channelR);
+
+	// 计算强度 I
+	channelI.create(src.rows, src.cols, CV_32FC1);
+	divide(matSum, 3, channelI);
+
+	// 计算饱和度 s
+	channelS.create(src.rows, src.cols, CV_32FC1);
+	min(channelB, channelG, matMin);
+	min(matMin, channelR, matMin);
+	divide(matMin, channelI, tmp);
+	subtract(Mat(src.rows, src.cols, CV_32FC1, Scalar(1)), tmp, channelS);
+	multiply(channelS, Mat(src.rows, src.cols, CV_32FC1, Scalar(100)), channelS);
+
+	// 计算 h
+	channelH.create(src.rows, src.cols, CV_32FC1);
+	float* bData = channelB.ptr<float>(0);
+	float* gData = channelG.ptr<float>(0);
+	float* rData = channelR.ptr<float>(0);
+	float* hData = channelH.ptr<float>(0);
+	float r, g, b, temp;
+	for (int i = 0; i < src.rows * src.cols; i++) {
+		b = bData[i]; g = gData[i]; r = rData[i];
+
+		// 单独处理 灰度图像
+		if (b == g && b == r) {
+			hData[i] = 0.0f;
+			continue;
+		}
+
+		temp = 0.5 * ((r - g) + (r - b)) / sqrt((r - g)*(r - g) + (r - b)*(g - b));
+		if (b <= g) {
+			hData[i] = 57.2958 * acos(temp);
+		}
+		else {
+			hData[i] = 360 - 57.2958 * acos(temp);
+		}
+	}
+
+	// 仅用于调试，归一化后转成8UC1显示出来
+	//multiply(channelH, Mat(src.rows, src.cols, CV_32FC1, Scalar(0.708)), channelH);
+	//multiply(channelS, Mat(src.rows, src.cols, CV_32FC1, Scalar(255)), channelS);
+	//channelH.convertTo(channelH, CV_8UC1);
+	//channelS.convertTo(channelS, CV_8UC1);
+	//channelI.convertTo(channelI, CV_8UC1);
+}
+
+void TSR::BGR2HSI_2(const Mat& src, Mat& channelH, Mat& channelS, Mat& channelI) {
+	Mat matBGR[3];
+	split(src, matBGR);
+	Mat matMin, matMax;
+
+	min(matBGR[0], matBGR[1], matMin);
+	min(matMin, matBGR[2], matMin);
+	max(matBGR[0], matBGR[1], matMax);
+	max(matMin, matBGR[2], matMax);
+
+	Mat tmp = Mat(src.rows, src.cols, CV_32FC1);
+	
+	Mat channelB, channelG, channelR;
+	matBGR[0].convertTo(channelB, CV_32FC1);
+	matBGR[1].convertTo(channelG, CV_32FC1);
+	matBGR[2].convertTo(channelR, CV_32FC1);
+
+	Mat matSum;
+	add(channelB, channelG, matSum); // R G B 之和
+	add(matSum, channelR, matSum);
+	//divide(channelB, matSum, channelB);  // 求解 b g r
+	//divide(channelG, matSum, channelG);
+	//divide(channelR, matSum, channelR);
+
+	// 计算强度 I
+	channelI.create(src.rows, src.cols, CV_32FC1);
+	divide(matSum, 3, channelI);
+
+	// 计算饱和度 s
+	channelS.create(src.rows, src.cols, CV_32FC1);
+	
+	divide(matMin, channelI, tmp);
+	subtract(Mat(src.rows, src.cols, CV_32FC1, Scalar(1)), tmp, channelS);
+	multiply(channelS, Mat(src.rows, src.cols, CV_32FC1, Scalar(100)), channelS);
+
+	// 计算 h
+	channelH.create(src.rows, src.cols, CV_32FC1);
+	float* bData = channelB.ptr<float>(0);
+	float* gData = channelG.ptr<float>(0);
+	float* rData = channelR.ptr<float>(0);
+	float* hData = channelH.ptr<float>(0);
+	float r, g, b, temp;
+	for (int i = 0; i < src.rows * src.cols; i++) {
+		b = bData[i]; g = gData[i]; r = rData[i];
+
+		// 单独处理 灰度图像
+		if (b == g && b == r) {
+			hData[i] = 0.0f;
+			continue;
+		}
+
+		temp = 0.5 * ((r - g) + (r - b)) / sqrt((r - g)*(r - g) + (r - b)*(g - b));
+		if (b <= g) {
+			hData[i] = 57.2958 * acos(temp);
+		}
+		else {
+			hData[i] = 360 - 57.2958 * acos(temp);
+		}
+	}
+
+	// 仅用于调试，归一化后转成8UC1显示出来
+	//multiply(channelH, Mat(src.rows, src.cols, CV_32FC1, Scalar(0.708)), channelH);
+	//multiply(channelS, Mat(src.rows, src.cols, CV_32FC1, Scalar(255)), channelS);
+	//channelH.convertTo(channelH, CV_8UC1);
+	//channelS.convertTo(channelS, CV_8UC1);
+	//channelI.convertTo(channelI, CV_8UC1);
 }

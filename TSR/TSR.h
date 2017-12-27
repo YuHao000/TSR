@@ -26,7 +26,7 @@ typedef struct {
 
 	// 二值化设置
 	int BinaryMethod;
-	int BinaryHmin, BinaryHmax, BinarySmin, BinaryVmin;
+	int BinaryHmin, BinaryHmax, BinarySmin, BinaryImin;
 	int BinaryRed, BinaryYellow;
 	int BinaryD;
 	bool BinaryPost;
@@ -36,7 +36,7 @@ typedef struct {
 	int ShapeMethod;
 	int HoughP1, HoughP2;
 	int ShapeVariance;
-	int ShapeDmin, ShapeDmax;
+	int ShapeDmin, ShapeDmax, ShapeCorner;
 }TSRParam_t;
 
 typedef struct {
@@ -71,6 +71,7 @@ private:
 	int64 startTime;
 	int64 endTime;
 	cv::Mat img;
+	cv::Mat channels[3];
 
 	void GetROIImage();
 	void OutputROIImage();
@@ -81,6 +82,9 @@ private:
 	void Binary();
 
 	void Shape();
+
+	void BGR2HSI(const cv::Mat& src, cv::Mat& channelH, cv::Mat& channelS, cv::Mat& channelI);
+	void BGR2HSI_2(const cv::Mat& src, cv::Mat& channelH, cv::Mat& channelS, cv::Mat& channelI);
 };
 
 #endif
